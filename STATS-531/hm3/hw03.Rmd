@@ -1,0 +1,160 @@
+---
+title: "STATS 531 hm3"
+author: "Yuan Yin"
+date: "2/3/2018"
+output: html_document
+---
+
+\newcommand\prob{\mathbb{P}}
+\newcommand\E{\mathbb{E}}
+\newcommand\var{\mathrm{Var}}
+\newcommand\cov{\mathrm{Cov}}
+
+-----------
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1.Brief introduction of data
+
+First we read in the data and look at the plot of temperature vs year roughly:
+```{r read_data}
+x <- read.table(file="http://ionides.github.io/531w18/01/ann_arbor_weather.csv",header=TRUE)
+x1 = na.omit(x)
+plot(Low~Year,data=x1,type="l")
+```
+
+Also we summary the low temperature data:
+
+```{r summary}
+summary(x1$Low)
+```
+
+We can see that both median and mean is around 0, and the scale of low temperature seems like symmetric on both side of mean. To confirm this:
+
+```{r mean line}
+plot(Low~Year,data=x1,type="l")
+abline(h = mean(x1$Low), lty = 2, lwd = 2, col = "red")
+```
+
+It seems like that there is no trend of our data, so we analyze our data under the null hyphosis with no trend. Also we can find that around year 1990, the variance of temperature seems to be larger than other times, which is deserved to explore further
+
+## 2.Fit ARMA model
+
+To fit our data best, we use AIC method to find appropriate p and q of ARMA(p,q) model which is represented by:
+
+$$ \phi(B)(Y_n-\mu) = \psi(B) \epsilon_n,$$
+where
+$$\begin{eqnarray} 
+\mu &=& \mathbb{E}[Y_n]\\
+\phi(x)&=&1-\phi_1 x-\dots -\phi_px^p,\\
+\psi(x)&=&1+\psi_1 x+\dots +\psi_qx^q,\\
+\epsilon_n&\sim&\mathrm{iid}\ N[0,\sigma^2]. 
+\end{eqnarray}$$
+
+Akaike¡¯s information criterion **AIC** is given by:
+$$AIC = -2\times \ell(\theta^*)+2D$$
+Then we choose appropriate range of p and q, and we compute their AIC value to choose the "better" one among them.
+
+```{r AIC, message = FALSE, warning = FALSE}
+aic_table <- function(data,P,Q){
+  table <- matrix(NA,(P+1),(Q+1))
+  for(p in 0:P) {
+    for(q in 0:Q) {
+       table[p+1,q+1] <- arima(data,order=c(p,0,q))$aic
+    }
+  }
+  dimnames(table) <- list(paste("<b> AR",0:P, "</b>", sep=""),paste("MA",0:Q,sep=""))
+  table
+}
+low_aic_table <- aic_table(x$Low,4,5)
+require(knitr)
+kable(low_aic_table,digits=2)
+```
+
+We can see that the smaller values occurs on ARMA(0,0), ARMA(0,1) and ARMA(1,0). We treat these three models as our "candidate" models. And we explore further to find which one is better.
+
+```{r}
+ar1 <- arima(x1$Low, order=c(1,0,0))
+ar1
+ma1 <- arima(x1$Low, order=c(0,0,1))
+ma1
+```
+
+Seeing that both coeffcients are less than 1. However, we can also find that the standard error of coeffcients is even larger than the coeffcient itself, which indicates that we should probably use ARMA(0,0) better.
+ARMA(0,0) is as follows:
+
+$$X_n = \mu + \epsilon_n $$
+where $\epsilon_n\sim\ N(0,\sigma^2)$ is white noise, and $\mu$ is constant. Thus, under our null hyphosis is:
+
+$$X_n\sim iid\ N(\mu,\sigma^2)$$
+
+We can estimate $\mu$ as follows:
+
+```{r}
+y <- arima(x1$Low, order=c(0,0,0))
+y
+```
+
+Thus, $\mu^* = -2.83$, with standard error $std.error= 0.68$, and the estimated $\sigma^{*2} = 52.9$
+
+We simulate with different $\mu$ under the hyphosis that the distribution of $X_n\sim iid\ N(-2.83,52.9)$. The plot below represents the density of different choose of $\mu$.
+
+```{r}
+set.seed(123456789)
+J <- 1000
+params <- coef(y)
+intercept <- params["intercept"]
+sigma <- sqrt(y$sigma2)
+theta <- matrix(NA,nrow=J,ncol=length(params),dimnames=list(NULL,names(params)))
+for(j in 1:J){
+   X_j <- rnorm(length(x1$Low),sd=sigma)+intercept
+   theta[j,] <- coef(arima(X_j,order=c(0,0,0)))
+}
+
+par(mfrow=c(1,2))
+hist(theta[,"intercept"],freq=FALSE,main="", xlab="mu") 
+plot(density(theta[,"intercept"],bw=0.05),main="")
+```
+
+The result is coninsistent with the estimate of$\mu$
+
+## 3.Diagnostic
+
+We need to check the assumptions and check the goodness of fit.
+First let's look at the QQ-plot to see if the residuals are under iid normal distribution.
+
+```{r}
+qqnorm(x1$Low)
+qqline(x1$Low)
+```
+
+It seems like that almost all the data are very close to the qq-line, we can assume that $X_n$ is under normal distribution.
+
+Then we look at the residuals to see if there is correlation between them.
+```{r}
+plot(y$resid, ylab="residuals")
+acf(y$resid,na.action=na.pass,main="ACF of residuals")
+```
+
+Seeing that there seems like no autocorrelation between residuals, as all the data is under the blue dashed line. But it seems like that there is a trend between them. Maybe we can explore further under the hyphosis with trend.
+
+## 4.Summary
+
+We choose ARMA(0,0) to fit the data of Ann Arbor January Low temperature time series. We check the normal assumption and autocorrelation of data, they all show that ARMA(0,0) model is good to fit our data.
+
+As the model shows that it only depends on the white noise process, which is a stochastic process. It means we cannot predict the future low temperature by our model. The result is stochastic.
+
+**Source:**
+
+* Lecture notes
+* previous solutions
+
+**Need to explain:**
+
+* When we use AIC method, why must we use the original data rather than the new data without missing values in it? Will using original data affect the result?
+* How to compute confidence interval from Fisher information.
+* How to tell whether the model is invertible? If only the coefficient is less than 1?
+* What is the histgram and density plot mean in the solution?
+
+-----------

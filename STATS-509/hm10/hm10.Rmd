@@ -1,0 +1,146 @@
+---
+title: "STATS 509 HOMEWORK 10"
+author: "Yuan Yin"
+date: "4/7/2018"
+output: pdf_document
+font size: 11pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+data = read.csv("NYA-2015-2017.csv", header = TRUE)
+NYSE_lret = diff(log(data$Adj.Close))
+NYSE_lret.ts = ts(data = NYSE_lret, start = c(2015,1), frequency = 252, names = c('logret'))
+```
+
+## Question 1
+### (a)
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(fGarch)
+garch11 = garchFit(~garch(1,1), data = NYSE_lret.ts, cond.dist = c("norm"), include.mean = TRUE, algorithm = c("nlminb"), hessian = c("ropt"))
+```
+
+```{r}
+summary(garch11)
+```
+
++ Finding that the standard error for $\alpha_0, \alpha_1, \beta_1$ respectly are: $SE_{\alpha_0} = 9.672e-07, SE_{\alpha_1} = 3.761e-02, SE_{\beta_1} = 4.316e-02$.
+
+```{r}
+half_life = ceiling(1-log(2)/log(garch11@fit$par[3]+garch11@fit$par[4]))
+```
+
++ Since $\lambda = \alpha_1 + \beta_1 = 0.9552$, find smallest positive integer k such that $\lambda^{k-1}\le 1/2$. We get $k = 17$.
+
+### (b)
+
+```{r fig.align='center', fig.width=6, fig.height=4}
+plot(garch11, which = 2);plot(garch11, which = 9)
+```
+
+### (c)
+
++ From the summary of our model in (a), we can find that p-value for JB and Shapiro-Wilk tests are far more less than significant level $\alpha = 0.05$, indicating that we reject the null hyphothsis that residuals are normal distribution. It's reasonable since our data size is large so that we can find the true distribution of residuals is not normal.
+
++ Samely, we can find that p-value for Box-Ljung test is larger than 0.05 which indicates that we fail to reject that the (squared) residuals are uncorrelated, i.e. they are uncorrelated. The result is what we like.
+
+```{r, fig.align='center', fig.height=3, fig.width=4}
+plot(garch11, which = 1);plot(garch11, which = 4)
+plot(garch11, which = 9);plot(garch11, which = 10)
+plot(garch11, which = 11);plot(garch11, which = 13)
+```
+
++ From the diagnostic plot above, we can see that there seems no autocorrelation between residuals, but the distribution of standardized residuals are not normal, the left tail has heavier tail than normal distribution, also it's seems that the distribution is asymmetric.
+
+### (d)
+
+Now let's assume that the distribution of our residuals are t-distribution.
+
+```{r message=FALSE, warning=FALSE, fig.height=3, fig.width=4, fig.align='center'}
+library(mnormt)
+library(MASS)
+residual = garch11@residuals/garch11@sigma.t
+df = seq(1,8,0.01)
+n = length(df)
+loglik_max = rep(0,n)
+for (i in 1:n){
+  fit = cov.trob(residual, nu=df[i])
+  mu = fit$center
+  sigma = fit$cov
+  loglik_max[i] = sum(log(dmt(residual, mean=fit$center, S=fit$cov, df=df[i])))
+}
+plot(df, loglik_max, xlab = 'nu', ylab = 'Profile-likelihood function')
+nuest = df[which.max(loglik_max)]
+N = length(residual)
+quantv = (1/N)*seq(0.5,N-0.5,1)
+par(mfrow=c(1,2))
+qqnorm(garch11@residuals/garch11@sigma.t, main = "QQ plot for normal-distribution")
+qqline(garch11@residuals/garch11@sigma.t)
+qqplot(qt(quantv,nuest), residual, main="QQ plot for t-distribution")
+qqline(residual, distribution=function(p) qt(p,nuest), prob=c(0.1,0.9), col=1)
+```
+
++ Using profile likelihood, we find the optimal value of degree of freedom $\nu = 5.41$ to fit our t-distribution.
+
++ Comparing with two distribution, we can find that t-distribution fit the left tail of residuals better than normal distribution.
+
++ However, right tail of residual has lighter tail than out t-distribution. This indicates that the true distribution is not symmetric.
+
+##  Question 2
+
++ First let's assume the residuals are normal distribution.
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+predict_garch11 = predict(garch11, n.ahead = 5)
+VaR_norm = 1-exp(qnorm(0.005, predict_garch11$meanForecast, predict_garch11$standardDeviation))
+garch11_t = garchFit(~garch(1,1), data = NYSE_lret.ts, cond.dist = c("std"), include.mean = TRUE, algorithm = c("nlminb"), hessian = c("ropt"))
+predict_garch11_t = predict(garch11_t, n.ahead = 5)
+nuest_t = garch11_t@fit$coef[5]
+VaR_t = 1-exp(predict_garch11_t$meanForecast+predict_garch11_t$standardDeviation*sqrt((nuest_t-2)/nuest_t)*qt(0.005,nuest_t))
+```
+
+```{r}
+VaR_norm; VaR_t
+```
+
++ If we assume our residuals are normal distribution, the relative VaR is 0.01308601, but if we assume our residuals are t-distribution, relative VaR is 0.01570865, which is larger. Since from previous question, we know t-distribution is better at fitting left tails, we trust more on the second result which relative VaR is the second one.
+
+## Question 3
+
+### (a)
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+ar1garch11 = garchFit(~arma(1,0)+garch(1,1), data = NYSE_lret.ts, cond.dist = c("norm"), include.mean = TRUE, algorithm = c("nlminb"), hessian = c("ropt")); summary(ar1garch11)
+ar2garch11 = garchFit(~arma(2,0)+garch(1,1), data = NYSE_lret.ts, cond.dist = c("norm"), include.mean = TRUE, algorithm = c("nlminb"), hessian = c("ropt"))
+```
+
+```{r}
+ar1garch11
+ar2garch11
+```
+
++ Finding that both AR(1)/GARCH(1,1) and AR(2)/GARCH(1,1) have insignificant AR(p) parameters, indicating that we should use orignal model rather than any AR(p)/GARCH(1,1) model.
+
+```{r}
+garch11@fit$ics
+garch11_t@fit$ics
+summary(garch11_t)
+```
+
++ Finding that t-distribution has lower AIC than normal distribution, so we choose GARCH(1,1) and with t-distribution.
+
++ Diagnostic plot is the same as in problem 1.
+
+### (b)
+
++ The same result as in problem 2. Relative VaR is 0.01328139.
+
+
+
+
+
+

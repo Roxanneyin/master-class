@@ -1,0 +1,84 @@
+---
+title: "STATS 509 HOMEWORK 7"
+author: "Yuan Yin"
+date: "3/17/2018"
+output: pdf_document
+font size: 11pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 (page 357 exercise 7, (a)&(b) is written by hand) (c)
+
+```{r}
+x = solve(matrix(c(1,0.4,0.4,1), nrow = 2))
+phi = x %*% c(0.4,0.2)
+options(digits = 3); phi
+rho3 = phi[1]*0.2 + phi[2]*0.4; rho3
+```
+
++ The result is that $\phi_1 = 0.3810, \phi_2 = 0.0476, \rho(3) = 0.0952$.
+
+## Question 2
+### (a)
+
+```{r fig.height= 3, fig.width= 6, fig.align = "center"}
+n = 302; alpha1 = 0.4; alpha2 = 0.4; sigma = 0.4
+set.seed(123)
+eps = rnorm(n,0,0.4)
+y = eps
+for (i in c(3:n)){
+  y[i] = alpha1*y[i-1] + alpha2*y[i-2] + eps[i]
+}
+plot(y, type = "l", xlab = "Time", ylab = "Y")
+set.seed(456)
+eps = rnorm(n,0,0.4)
+y = eps
+for (i in c(3:n)){
+  y[i] = alpha1*y[i-1] + alpha2*y[i-2] + eps[i]
+}
+plot(y, type = "l", xlab = "Time", ylab = "Y")
+eps = rnorm(n,0,0.4)
+y = eps
+for (i in c(3:n)){
+  y[i] = alpha1*y[i-1] + alpha2*y[i-2] + eps[i]
+}
+plot(y, type = "l", xlab = "Time", ylab = "Y")
+```
+
+### (b)
++ Seeing that there are obvious differences among three plots. Now let's plot ACF and PACF.
+
+```{r fig.height= 4, fig.width= 4, fig.align = "center"}
+acf(y, lag = 10)
+acf(y, lag = 10, type = "partial")
+```
+
++ Seeing that for ACF plot, AR(2) model shows significant autocorrelation with small lags, and this autocorrelation decreases gradually with lag increases.
++ For PACF plot, it shows only lag 1 and 2 has significant autocorrelation, indicating that for lag>2, there is no significant autocorrelation when taking everthing between them in consideration. This indicates that this is an AR(2) model.
+
+### (c)
+
+```{r fig.height= 4, fig.width= 4, fig.align = "center"}
+gamma_0 = (0.4)^2/(1-alpha1^2-alpha2^2)
+x = solve(t(matrix(c(1,-alpha1,-alpha2,-alpha1,1-alpha2,0,alpha2,alpha1,-1), nrow = 3)))
+gamma02 = x %*% c(sigma^2,0,0)
+options(digits = 3);
+gamma = rep(0,8)
+for (i in 1:8){
+  if (i <= 3){
+    gamma[i] = gamma02[i]
+  }
+  else{
+    gamma[i] = alpha1*gamma[i-1] + alpha2*gamma[i-2]
+  }
+}
+gamma_est = acf(y, type = c("covariance"), plot = FALSE, lag = 7)
+plot(gamma, gamma_est$acf,  xlab = "true value", 
+     ylab = "estimate", main = "estimate vs. true value of autocovariance")
+lines(gamma,gamma)
+```
+
++ Seeing that the real line is true value itself and the circles are plot of **estimate vs. true value**.

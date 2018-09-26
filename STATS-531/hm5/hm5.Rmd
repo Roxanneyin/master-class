@@ -1,0 +1,140 @@
+---
+title: "Stats 531_Homework 5"
+author: "Yuan Yin"
+date: "2/18/2018"
+output: html_document
+---
+
+#Question 5.1
+
+
+##(A)
+
+**Resource:  R. Shumway and D. Stoffer "Time Series Analysis and its Applications" 4th edition and hw solution from w16**
+
+**Question: Don't understand why in the solution of previous class, the inverse Fourier transformation integral is from -1/2 to 1/2**
+
+Given the AR2 model
+$$X_{n}=1.5X_{n-1}-0.8X_{n-2}+\epsilon_{n},$$
+we have $\psi(z)=1, \phi(z)=1-1.5z+0.8z^2$
+
+$$\begin{aligned}
+|\phi(e^{-2\pi iw})|^2=& (1-1.5e^{-2\pi iw}+0.8e^{-4\pi iw})(1-1.5e^{2\pi iw}+0.8e^{4\pi iw})\\
+=& 1-1.5e^{2\pi iw}+0.8e^{4\pi iw}-1.5e^{-2\pi iw}+2.25-1.2e^{2\pi iw}+0.8e^{-4\pi iw}-1.2e^{-2\pi iw}+0.64\\
+=& 3.89-2.7(e^{2\pi iw}+e^{-2\pi iw})+0.8(e^{4\pi iw}+e^{-4\pi iw})\\
+=& 3.89-2.7cos(2\pi w)+0.8cos(4\pi w)\\
+\end{aligned}$$
+
+Using the result from Property 4.4 from textbook, we have that the spectral density is:
+
+$$\begin{aligned}
+\lambda_{X}(w)=&\sigma^2 \frac{|\psi(e^{-2\pi iw})|^2}{|\phi(e^{-2\pi iw})|^2}\\
+=&\frac{\sigma^{2}}{3.89-5.4\cos\left(2\pi w\right)+1.6\cos\left(4\pi w\right)}
+\end{aligned}$$
+
+
+The plot of the spectral density and autocovariance are given as follows.
+
+```{r plot1, message=FALSE, warning=FALSE}
+library('TSA')
+ARMAspec(model = list(ar = c(1.5, -0.8)))
+model_AR = arima.sim(model = list( ar = c(1.5, -0.8)), n=1000)
+acf(model_AR, type="covariance")
+```
+
+##(B) 
+
+**Resource:  R. Shumway and D. Stoffer "Time Series Analysis and its Applications" 4th edition and hw solution from w16**
+
+Given the MA2 model
+$$X_{n}=\epsilon_{n-2}+\epsilon_{n-1}+\epsilon_{n}$$
+
+we have $\phi(z)=1, \psi(z)=1+z+z^2$
+
+$$\begin{aligned}
+|\psi(e^{-2\pi iw})|^2=& (1+e^{-2\pi iw}+e^{-4\pi iw})(1+e^{2\pi iw}+e^{4\pi iw})\\
+=& 1+e^{2\pi iw}+e^{4\pi iw}+e^{-2\pi iw}+1+e^{2\pi iw}+e^{-4\pi iw}+e^{-2\pi iw}+1\\
+=& 3+2(e^{2\pi iw}+e^{-2\pi iw})+(e^{4\pi iw}+e^{-4\pi iw})\\
+=& 3+4cos(2\pi w)+2cos(4\pi w)\\
+\end{aligned}$$
+
+Using the result from Property 4.4 from textbook, we have that the spectral density is:
+
+$$\begin{aligned}
+\lambda_{X}(w)=&\sigma^2 \frac{|\psi(e^{-2\pi iw})|^2}{|\phi(e^{-2\pi iw})|^2}\\
+=&\sigma^{2}[3+4\cos(2\pi w)+2\cos(4\pi w)]\\
+\end{aligned}$$
+
+The plot of the spectral density and autocovariance are given as follows:
+
+
+```{r plot2}
+ARMAspec(model = list(ma = c(1, 1)))
+model_MA = arima.sim(model = list( ma = c(1, 1)), n=1000)
+acf(model_MA, type="covariance", plot= TRUE)
+```
+
+##(C) 
+
+From part A, we can see a peak at 0.1 frequency, which is the dominant frequency. This indicates that the dominant period is around 10, which we can observed from ACF is 11. These two results match with each other.
+
+For part B, there is no appearant peak on the spectrum density plot, and there is no periodic behavior on the ACF plot either. Again, these two correspond to each other.
+
+We can also notice a small oscillation in the spectral density for the MA process, with a dip in the spectral density at frequency 0.33. Thus, for the AR process, the spectral power is concentrated around a peak and the ACF oscillates. For the MA process, the ACF goes quickly to zero and the spectrum oscillates.
+
+-------------------
+
+#Question 5.2
+
+**Resource: Homework solution from w16 and https://solarscience.msfc.nasa.gov/SunspotCycle.shtml**
+
+We first make a time plot of the data to explore.
+
+```{r explore}
+mydata = read.table(file="https://ionides.github.io/531w18/hw05/sunspots.txt", header = TRUE)
+year = mydata$Time
+number = mydata$Number
+plot(year, number, type= "l")
+```
+
+From the plot, we see that there is a periodic behavior, with regularly spaced peaks. The time interval between these peaks are about 11 years as we reading from the material given in the homework.
+
+Now we take a look at spectrum density.
+
+```{r spectral}
+spectrum(number, main = "Unsmoothed periodogram")
+```
+
+We first use R to see an unparametric method result of the data. 
+```{r unsmoothperiodogram}
+smoothed_r = spectrum(number, spans=c(30,30), main = "Smoothed periodogram")
+```
+
+We now determine the dominant frequency.
+```{r dominantFrequency}
+smoothed_r$freq[which.max(smoothed_r$spec)]
+```
+
+We see that the dominant frequency is 0.007407407, which corresponds to a period of :
+$$period = \frac{1}{0.0074} = 135.135 months = 11.26 years$$
+
+**Below are from the solution of w16, try to use another method to do the same thing.**
+
+Now we use parametric method to estimate the spectral density.
+
+```{r estimate}
+estimated = spectrum(number, method = "ar", main = "Spectrum estimated via AR model picked by AIC")
+abline(v=estimated$freq[which.max(estimated$spec)], lty="dotted")
+```
+
+The dominant frequecy is given by
+```{r dominantFrequency1}
+estimated$freq[which.max(estimated$spec)]
+```
+
+
+We see that the dominant frequency is 0.008016032, which corresponds to a period of:
+$$period = \frac{1}{0.00801} = 124.84 months = 10.4 years$$
+
+The results from two estimations are very close to each other and they are close to the 11 year period. Therefore we can conclude that both of them are reliable and can be used.
+

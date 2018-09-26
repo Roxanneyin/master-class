@@ -1,0 +1,96 @@
+---
+title: "STATS HOMEWORK 6"
+author: "Yuan Yin"
+date: "3/12/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+### (a) Exercise 1 on page 356
+
+#### (i)
+
+```{r message = FALSE, warning = FALSE}
+library(Ecdat)
+data(CRSPday)
+crsp=CRSPday[,7]
+acf(crsp)
+acf(as.numeric(crsp))
+```
+
++ We can see that the two plots have the exactly same shape of autocorrelation values, but only different in lags. This is because that in our original data, the unit is year, Thus in ACF plot, the unit of lag is also year. But for the second plot, we use "as.numeric" to elimate original time scale in data. The unit is the same with every data point, that is "day". Thus the value of lag change from 0.004 to 1. Seeing that means 1 unit in polt one is equal to 250 units in polt two. Also from the data we can see that there are around 250 point data every year. These matches.
+
+#### (ii)
+
++ Seeing that significant lags are at 1, 7, 16, 27 (out of the blue dashed line which is 95% confidence interval). For lag equal to 1 is reasonable, which is because that 1 lag have relation means that the return today is affected by yesterday's return and it's reasonable. 7, 16 and 27 lags doesn't have real meanings, and also we can see that the value is not very far from the blue dashed line from the plot, which may only be due to a chance.
+
+### (b) Exercise 4 on page 356 (See on the pages behind)
+
+## Problem 2
+
+### (a)
+
++ First read in the data and compute weekly return for both index:
+
+```{r}
+data1 = read.csv("Nasdaq_wklydata_92-12.csv", header = T)
+data2 = read.csv("SP400Mid_wkly_92-12.csv", header = T)
+idx1 = which(is.na(data1$Adj.Close) == FALSE)
+idx2 = which(is.na(data2$Adj.Close) == FALSE)
+nas = rev(data1$Adj.Close[idx1])
+sp400 = rev(data2$Adj.Close[idx2])
+nas_lreturn = diff(log(nas))
+sp400_lreturn = diff(log(sp400))
+nas_return = exp(nas_lreturn) - 1
+sp400_return = exp(sp400_lreturn) - 1
+```
+
++ First let's look at what ACF plots look like for each return.
+
+```{r}
+acf(as.vector(nas_return), lag = 20, main = 'Nasdaq')
+acf(as.vector(sp400_return), lag = 20, main = 'SP400')
+```
+
++ Seeing that for both plots, almost all the autocorrelation are in the confidence interval, which looks like a white noise but still further dignostic.
++ For Nasdaq, only lag 7 is a little significant. However, comparing with 95% confidence interval, 20*(1-95%) = 1, which means there can be at most 1 lag out of confidence interval. Thus we can conclude that ACF plot shows that there is no autocorrelation of Nasdaq returns.
++ For SP400, with the same reason, there are two lags out of the confidence interval (2 > 20*(1-95%)), lag 12 and lag 15. More than 5% lags out of the confidence interval, indicating that maybe there are autocorrelations of SP400 returns.
+
+### (b)
+
++ We trying different lags to see if there are significant evidence proving that both returns are not white noise. And we find the p-value of Nasdaq is less than $\alpha = 0.05$, which means we reject the null hypothesis that Nasdaq is a white noise.
++ However, the p-value of SP400 is larger than $\alpha = 0.05$, we can't reject the null hypothesis. We need to go further to check if it's a white noise.
+
+```{r}
+Box.test(nas_return, lag = 10, type = 'Ljung')
+Box.test(sp400_return, lag = 10, type = 'Ljung')
+```
+
+### (c)
+
++ Now let's see what ACF plots look like for absoulte values.
+
+```{r}
+acf(as.vector(abs(nas_return)), lag = 20, main = 'Nasdaq')
+acf(as.vector(abs(sp400_return)), lag = 20, main = 'SP400')
+```
+
++ Seeing that all lags less than 20 have significant autocorrelation, we can conclude that both returns are difinitely not white noise. Because the autocorrelation of **absoulte of white noise** should still be not significant.
+
++ Comparing two results in (a) and (c), we can see the reason of this phenomenon is that the magnitude of returns have high correlation. Thus when we compute absolute value, it shows significant autocorrelation. But we can't see this result when we only compute original returns since the returns can be positive and negative and it's random with no relation.
+
+### (d)
+
+```{r}
+acf(as.vector(nas), lag = 20, main = 'Nasdaq')
+acf(as.vector(sp400), lag = 20, main = 'Nasdaq')
+```
+
++ Seeing that both plots have almost 1 autocorrelation with all lags, which means they all have strong correlations.
++ With lag gets larger, autocorrelation seems like decreasing.
++ This indicates that the process of actual price is not stationary.

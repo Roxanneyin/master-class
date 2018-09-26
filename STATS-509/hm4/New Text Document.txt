@@ -1,0 +1,17 @@
+```{r}
+set.seed(12345678)
+cn = normalCopula(fnorm@estimate[1], dim = 2, dispstr = "un")
+uvsim1 = rCopula(1000000, cn)
+w1 = seq(0, 1, 0.01)
+n1 = length(w1)
+VaRv1 = rep(0, n1)
+data_sim1 = cbind(qstd(uvsim1[,1], mean = est.nas[1], sd = est.nas[2], nu = est.nas[3]), qstd(uvsim1[,2], mean = est.sp400[1], sd = est.sp400[2], nu = est.sp400[3]))
+for (i in 1:n1){
+  datat1 = w1[i] *data_sim1[,1] + (1 - w1[i]) * data_sim1[,2];
+  VaRv1[i] = -quantile(datat1, 0.001)
+}
+plot(w1, VaRv1, xlab = 'w', ylab = 'VaR', main = "VaR vs. w")
+wmax1 = w1[which.min(VaRv1)]
+VaR1 = VaRv1[which.min(VaRv1)]
+c(wmax1, VaR1)
+```

@@ -1,0 +1,12 @@
+---
+title: "STATS 531 hm4"
+author: "Yuan(Roxanne) Yin"
+date: "2/13/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+

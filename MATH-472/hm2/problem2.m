@@ -1,0 +1,15 @@
+A =[2 -2 -1;4 1 -2;-2 1 -1]; % input the matrix
+b =[-2,1,-3]; % input the vector
+b = b';
+[A,b] = gauss_em(A,b);
+x = back_sub(A,b)
+A =[1 2 -1;0 3 1;2 -1 1]; % input the matrix
+b =[2,4,2]; % input the vector
+b = b';
+[A,b] = gauss_em(A,b);
+x = back_sub(A,b)
+A =[2 1 -4;1 -1 1;-1 3 -2]; % input the matrix
+b =[-7,-2,6]; % input the vector
+b = b';
+[A,b] = gauss_em(A,b);
+x = back_sub(A,b)

@@ -1,0 +1,4 @@
+It's easy to see that this data is not with every day data but only recorded on week days. For convience and to make the time series model clearly with equal time span, we extract weakly data with every "seven days". Seeing that the first day of our data is "3-2-2015" and it's Monday. Thus our new data is the adjusted closing price of every Monday of the past three years.
+n = floor(length(date)/5); m = seq(1,n,1)
+date_new = date[(m-1)*5+1]
+price_new = price[(m-1)*5+1]
