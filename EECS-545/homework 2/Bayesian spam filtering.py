@@ -9,27 +9,24 @@ x = z[:,:-1]
 y = z[:,-1]
 
 # Quantize variables with option 2 where values equal to the median to 1
-mid = np.median(x,axis=0)
-row_num = x.shape[0]
-col_num = x.shape[1]
-for i in range(row_num):
-    for j in range(col_num):
-        if x[i,j] > mid[j]:
-            x[i,j] = 2
-        else:
-            x[i,j] = 1
-
-y = list(y)
+row_num,col_num = x.shape; y = list(y)
 x_train = x[0:2000,:]
 y_train = y[0:2000]
 x_test = x[2000:row_num,:]
 y_test= y[2000:row_num]
 
+mid_train = np.median(x_train,axis=0)
+for i in range(2000):
+    for j in range(col_num):
+        if x_train[i,j] > mid_train[j]:
+            x_train[i,j] = 2
+        else:
+            x_train[i,j] = 1
+
 # Build up Naive Bayes Classifier
-## compute the probability of y=0,1 and the conditional probability of x_j=1,2 when y=0,1
-n_0 = y_train.count(0)
-pi_0 = n_0/len(y_train)
-pi_1 = 1-pi_0
+## compute the probability of y=0,1 and the conditional probability of x_j=1,2 given y=0,1
+n_1 = sum(y_train); n_0 = len(y_train) - n_1
+pi_1 = n_1/len(y_train); pi_0 = 1-pi_1 # the pmf of y
 count_x_equ_1_y_equ_0 = np.zeros(col_num)
 count_x_equ_1_y_equ_1 = np.zeros(col_num)
 count_x_equ_2_y_equ_0 = np.zeros(col_num)
@@ -47,7 +44,6 @@ for l in range(len(y_train)):
                 count_x_equ_1_y_equ_1[n] += 1
             elif x_train[l,n] == 2:
                 count_x_equ_2_y_equ_1[n] += 1
-
 p_yto0_j_xto1 = np.zeros(col_num)
 p_yto1_j_xto1 = np.zeros(col_num)
 p_yto0_j_xto2 = np.zeros(col_num)
@@ -59,14 +55,18 @@ for i in range(col_num):
     p_yto1_j_xto1[i] = count_x_equ_1_y_equ_1[i]/(len(y_train)-n_0)
     p_yto1_j_xto2[i] = count_x_equ_2_y_equ_1[i]/(len(y_train)-n_0)
 
-print(p_yto0_j_xto1)
-print(p_yto1_j_xto1)
 # Test data
-## compute the test result
+## quantize the test data with median of training data, and compute the test result
+for i in range(x_test.shape[0]):
+    for j in range(x_test.shape[1]):
+        if x_test[i,j] > mid_train[j]:
+            x_test[i,j] = 2
+        else:
+            x_test[i,j] = 1
+
 y_test_result = np.zeros(x_test.shape[0])
 for i in range(x_test.shape[0]):
-    y0 = 1
-    y1 = 1
+    y0 = 1; y1 = 1
     for j in range(x_test.shape[1]):
         if x_test[i,j] == 1:
             y0 = y0*p_yto0_j_xto1[j]
@@ -80,10 +80,13 @@ for i in range(x_test.shape[0]):
         y_test_result[i] = 1
 
 ## Test error
-right = 0
+error = 0
 for i in range(len(y_test)):
-    if y_test[i] == y_test_result[i]:
-        right += 1
+    if y_test[i] != y_test_result[i]:
+        error += 1
+print("The test error of spam emails by Naive Bayes classifier is %f." %(error/len(y_test)) )
 
-print(right)
-print(1-right/len(y_test))
+## Sanity check
+major = 1-y_train.count(1)/len(y_train) # In the training data, the major class for emails is "not spam", so we assume to predict all emails are not spam emails.
+error_sanity = y_test.count(1)/len(y_test)
+print("The sanity check error is %f." %(error_sanity))

@@ -10,14 +10,14 @@ y = mnist_49_3000['y']
 d,n = x.shape
 y += (y < 0) * 1
 
-# Process the data
+# Process the data, we divide the data into training part and test part
 added = np.ones(n)
 x_original = x; y_original = y
 x = mat(np.vstack((added,x))); y = mat(y)
 x_train = x[:,:2000]; y_train = y[:,:2000]
 x_test = x[:,2000:]; y_test= y[:,2000:]
 
-# Initialization
+# Initialize parameters
 lamda = 10
 theta = mat(np.zeros(d + 1))
 dJ = mat(np.zeros(d + 1))
@@ -42,7 +42,6 @@ while (error0/2000 > 0.025):
             error0 += 1
     N = N+1
 print("Iteration times: ", N)
-# print(error0/2000)
 
 # Test data
 y_test_result = theta * x_test
@@ -60,8 +59,7 @@ for m in range(1000):
         false.append(m)
 print("Test error is: ", error1/1000)
 prob = np.zeros(1000)
-x_false = x_test[1:,false];
-x_false = x_false.getA()
+x_false = x_test[1:,false]; x_false = x_false.getA()
 y_false = y_test[:,false]
 y_false_result = y_test_result[:,false]
 for l in range(1000):
@@ -76,7 +74,8 @@ for l in range(20):
     x_false20[:,l] = x_false[:,int(indx[l])]
     y_real20[l] = y_false[:,int(indx[l])]
     y_pre20[l] = y_false_result[:,int(indx[l])]
-print(y_real20,y_pre20)
+
+## Plot the picture of 20 missclassified pictures
 plt.figure(num='missclassified',figsize=(8,8))
 for l in range(20):
     plt.subplot(4,5,1+l)
