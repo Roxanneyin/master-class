@@ -22,6 +22,5 @@ for i = 1:1000
         end
     end
 end
-E_Q
 max(E_Q)
 min(E_Q)

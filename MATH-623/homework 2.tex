@@ -1,0 +1,126 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\usepackage{setspace}
+\usepackage{bm}    %for textbf
+\usepackage{amsmath}
+\usepackage{amsfonts}   %for mathbb
+\allowdisplaybreaks[4]  %from {amsmath}
+\newcommand{\independent}{\rotatebox[origin=c]{90}{$\models$}}  %from {graphicx}
+\usepackage{geometry}
+\geometry{letterpaper, scale=0.8}  %from {geometry}
+\author{Yuan Yin}
+\title{MATH 623 Homework 1}
+\begin{document}\large
+\maketitle
+\begin{spacing}{1.2}  %from {setspace}
+\section*{Problem 1}
+\subsection*{2)}
+The main code and the function used in it:
+\begin{lstlisting}
+r = 0.05; N = 100; u = 2;
+sigma_d = 0.5; sigma_u = 0.8;
+K1 = 0.2; K2 = 20;
+dt = 1/N; d = 1/u;
+q_d = []; q_u = []; E_Q_range = []; E_Q = [];
+for i = 1:1000
+    q_u = [q_u, 1/1000*i];
+    q_d = [q_d, (q_u(i)-r*dt/(u-1))*u];
+    E_Q_range = [E_Q_range, q_u(i)*(u-(1+r*dt))^2 + q_d(i)*(1/u-(1+r*dt))^2 + (1-q_u(i)-q_d(i))*(1-(1+r*dt))^2];
+    if  (q_u(i) <= ((u-1+u*r*dt)/(u^2-1))) & (r*dt/(u-1))
+        if (E_Q_range(i) <= (sigma_u^2)) & (E_Q_range(i) >= (sigma_d^2))
+            total = 0; times = 0;
+            for j = 0:N % times for up
+                for k = 0:(N-j) % times for hold
+                    times = factorial(N)/(factorial(j)*factorial(N-j-k)*factorial(k));
+                    S_N = (u^j)*(d^(N-j-k));
+                    f_S_N = maxfunc(S_N,K1,K2);
+                    total = total + times*(q_u(i)^j)*((1-q_u(i)-q_d(i))^k)*(q_d(i)^(N-j-k))*f_S_N/((1+r*dt)^N);
+                end
+            end
+            E_Q = [E_Q, total];
+        end
+    end
+end
+E_Q
+max(E_Q)
+min(E_Q)
+
+function y = maxfunc(x,a,b)
+y = max(x-a,0)-max(x-b,0);
+end
+\end{lstlisting}
+the result is:
+\begin{lstlisting}
+>> hm1_question1
+
+ans =
+
+    0.0532
+
+
+ans =
+
+    0.0022
+\end{lstlisting}
+\section*{Problem 2}
+\subsection*{5)}
+the main code and the function used in it:
+\begin{lstlisting}
+N = 100; u = 1.1; d = 0.9;
+k1 = 0.5; k2 = 2;
+q_u = (1-d)/(u-d); q_d = 1-q_u;
+P = zeros(N+1,N+1);
+for i = 1:N+1
+    P(N+1,i) = payoff(u^(i-1)*d^(N-i+1),k1,k2);
+end
+for j = N:-1:1
+    for k = 1:j
+        P(j,k) =max(q_u*P(j+1,k+1)+(1-q_u)*P(j+1,k), payoff(u^(k-1)*d^(j-k),k1,k2));
+    end
+end
+P(1,1)
+
+function f_x = payoff(x,a,b)
+if (x>0) & (x<=1)
+    f_x = max(x-a,0);
+elseif (x>1) & (x<=1.5)
+    f_x = a;
+elseif (x>1.5)
+    f_x = max(b-x,0);
+end
+end
+\end{lstlisting}
+the result is:
+\begin{lstlisting}
+>> hm1_qestion2
+
+ans =
+
+    0.5000
+\end{lstlisting}
+\end{spacing}
+\end{document}

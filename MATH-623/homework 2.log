@@ -1,10 +1,7 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6800 64-bit) (preloaded format=xelatex 2018.9.22)  26 SEP 2018 19:02
+This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6800 64-bit) (preloaded format=xelatex 2018.9.22)  1 OCT 2018 10:06
 entering extended mode
-**"C:/Users/Roxanne/Documents/GitHub/master-class/EECS-545/homework 2/homework 
-2.tex"
-
-("C:/Users/Roxanne/Documents/GitHub/master-class/EECS-545/homework 2/homework 2
-.tex"
+**"C:/Users/Roxanne/Documents/GitHub/master-class/MATH-623/homework 2.tex"
+("C:/Users/Roxanne/Documents/GitHub/master-class/MATH-623/homework 2.tex"
 LaTeX2e <2018-04-01> patch level 5
 (D:\APPLICATIONS\Miktex\tex\latex\base\article.cls
 Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
@@ -230,16 +227,22 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 38.
 
 (D:\APPLICATIONS\Miktex\tex\latex\amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1
+)
+Overfull \hbox (12.31152pt too wide) in paragraph at lines 61--62
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][]  
+ []
 
-] ("homework 2.aux") ) 
+[1
+
+] [2] [3] ("homework 2.aux") ) 
 Here is how much of TeX's memory you used:
- 3132 strings out of 427798
- 40729 string characters out of 3152742
- 320957 words of memory out of 3000000
- 7112 multiletter control sequences out of 15000+200000
- 11094 words of font info for 46 fonts, out of 3000000 for 9000
+ 3152 strings out of 427798
+ 40975 string characters out of 3152742
+ 316957 words of memory out of 3000000
+ 7128 multiletter control sequences out of 15000+200000
+ 11118 words of font info for 49 fonts, out of 3000000 for 9000
  1328 hyphenation exceptions out of 8191
- 27i,6n,40p,310b,1123s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,6n,40p,299b,1686s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on homework 2.pdf (1 page).
+Output written on homework 2.pdf (3 pages).
