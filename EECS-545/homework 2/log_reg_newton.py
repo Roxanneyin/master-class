@@ -76,7 +76,8 @@ for l in range(20):
     y_pre20[l] = y_false_result[:,int(indx[l])]
 
 ## Plot the picture of 20 missclassified pictures
-plt.figure(num='missclassified',figsize=(8,8))
+fig = plt.figure(num='missclassified',figsize=(8,10))
+fig.suptitle("\"True\" represents real result, \"Pre\" represents predicted result\n")
 for l in range(20):
     plt.subplot(4,5,1+l)
     if y_real20[l] == 0:
