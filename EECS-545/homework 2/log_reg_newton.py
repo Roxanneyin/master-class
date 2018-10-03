@@ -42,8 +42,13 @@ while (error0/2000 > 0.025):
             error0 += 1
     N = N+1
 print("Iteration times: ", N)
-
-# Test data
+log_like = 0
+for l in range(2000):
+    z = 1 / (1 + np.exp(-theta * x_train[:,l]))
+    log_like += y_train[0,l]*np.log(z)+(1-y_train[0,l])*np.log(1-z)
+J = -log_like + lamda*theta*theta.T
+print(J)
+#Test data
 y_test_result = theta * x_test
 eta_test = 1/(1+np.exp(-y_test_result))
 false = []
