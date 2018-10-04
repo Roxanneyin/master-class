@@ -24,6 +24,7 @@ dJ = mat(np.zeros(d + 1))
 d2J = mat(np.zeros([d + 1,d + 1]))
 
 # Iteration with Newton's Method:
+## Notice here the stop condition for iteration is when the change of theta is less than 1%
 N = 0; error0 = 10
 while (error0 > 0.01):
     z = 1 / (1 + np.exp(-theta*x_train))
@@ -78,7 +79,7 @@ for l in range(20):
     y_real20[l] = y_false[:,int(indx[l])]
     y_pre20[l] = y_false_result[:,int(indx[l])]
 
-## Plot the picture of 20 missclassified pictures
+## Plot the picture of 20 most confident missclassified pictures
 fig =  plt.figure(num='missclassified',figsize=(8,8))
 fig.suptitle("\"True\" represents real result, \"Pre\" represents predicted result\n")
 for l in range(20):
