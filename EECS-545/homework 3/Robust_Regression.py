@@ -50,6 +50,7 @@ while error > 0.01:
     error = np.sqrt((w_new - w_rob)**2 + (b_new - b_rob)**2)
     w_rob, b_rob = w_new[0,0], b_new[0,0]
 
+print("Parameters of ROB are: w: ",w_rob, "b: ", b_rob)
 plt.plot(t, w_rob*t+b_rob, 'r:', label = 'robust')
 legend = plt.legend(loc='upper right', shadow=True)
 plt.show()
