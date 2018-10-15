@@ -26,10 +26,9 @@ x = np.mat(x); y = np.mat(y)
 add = 1; J = []
 x_tilda = np.insert(x, 0, values=add, axis=0)
 lamda = 0.001; omega = np.zeros(d); b = 0
-Iteration = 5
+Iteration = 35
 for j in range(Iteration):
     ui = 0; alpha = 100/(j+1); N = np.random.permutation(n); Loss = 0
-    print(j)
     for i in N:
         h = 1 - y[0,i] * (np.dot(omega, x[:,i]) + b)
         if h[0,0] > 0:
@@ -41,12 +40,12 @@ for j in range(Iteration):
         ui = 1/n * (-y[0,i] * x_tilda[:,i]) * scale + lamda / n * np.mat([0, omega[0], omega[1]]).T
         b -= alpha * ui[0]; omega[0] -= alpha * ui[1]; omega[1] -= alpha * ui[2]
         t = (omega * x + b)
-        temp = np.array(1 - np.multiply(y, t))
-        temp *= (temp > 0)
+        Loss = np.array(1 - np.multiply(y, t))
+        Loss *= (Loss > 0)
         # Loss += max(0, h[0, 0])
-        J.append(np.sum(temp)/n + lamda/2 * np.dot(omega, omega))
+        J.append(np.sum(Loss)/n + lamda/2 * np.dot(omega, omega))
 
-print(b[0,0], omega[0], omega[1])
+print("Pa",b[0,0], omega[0], omega[1])
 t = pl.frange(0,8,0.01)
 n = pl.frange(1,Iteration*n)
 plt.plot(t, -omega[0]/omega[1] * t - b[0,0]/omega[1], label = 'learned line')
