@@ -45,11 +45,13 @@ for j in range(Iteration):
         # Loss += max(0, h[0, 0])
         J.append(np.sum(Loss)/n + lamda/2 * np.dot(omega, omega))
 
-print("Pa",b[0,0], omega[0], omega[1])
+print("Parameters of estimated hyperplane are: b = ", b[0,0], "w_1 = ", omega[0], "w_2 = ", omega[1])
+print("the minimum achieved value of the objective function is: ", min(J))
 t = pl.frange(0,8,0.01)
 n = pl.frange(1,Iteration*n)
 plt.plot(t, -omega[0]/omega[1] * t - b[0,0]/omega[1], label = 'learned line')
 legend = plt.legend(loc='upper right', shadow=True)
+
 # Plot the objective function
 plt.figure()
 plt.plot(n, J, label = 'Objective Function')

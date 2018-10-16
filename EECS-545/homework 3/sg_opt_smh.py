@@ -42,7 +42,8 @@ for j in range(Iteration):
     J.append(Loss/n + lamda/2 * np.dot(omega, omega))
     b -= alpha * u[0]; omega[0] -= alpha * u[1]; omega[1] -= alpha * u[2]
 
-print(b[0,0], omega[0], omega[1])
+print("Parameters of estimated hyperplane are: b = ", b[0,0], "w_1 = ", omega[0], "w_2 = ", omega[1])
+print("the minimum achieved value of the objective function is: ", min(J))
 t = pl.frange(0,8,0.01)
 n = pl.frange(1,Iteration)
 plt.plot(t, -omega[0]/omega[1] * t - b[0,0]/omega[1], label = 'learned line')

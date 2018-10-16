@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6800 64-bit) (preloaded format=pdflatex 2018.9.22)  15 OCT 2018 19:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6800 64-bit) (preloaded format=pdflatex 2018.9.22)  15 OCT 2018 20:19
 entering extended mode
 **"C:/Users/Roxanne/Documents/GitHub/master-class/EECS-545/homework 3/hm3.tex"
 ("C:/Users/Roxanne/Documents/GitHub/master-class/EECS-545/homework 3/hm3.tex"
@@ -312,23 +312,46 @@ File: Robust_Regression.png Graphic file (type png)
 Package pdftex.def Info: Robust_Regression.png  used on input line 109.
 (pdftex.def)             Requested size: 357.75677pt x 292.69357pt.
  [2] [3 <./Robust_Regression.png>]
-[4] [5] (hm3.aux) ) 
+[4]
+<sg_opt_smh.png, id=22, 462.528pt x 338.2236pt>
+File: sg_opt_smh.png Graphic file (type png)
+<use sg_opt_smh.png>
+Package pdftex.def Info: sg_opt_smh.png  used on input line 177.
+(pdftex.def)             Requested size: 357.75677pt x 292.69357pt.
+<sg_opt_smh_J.png, id=23, 462.528pt x 338.2236pt>
+File: sg_opt_smh_J.png Graphic file (type png)
+<use sg_opt_smh_J.png>
+Package pdftex.def Info: sg_opt_smh_J.png  used on input line 179.
+(pdftex.def)             Requested size: 357.75677pt x 292.69357pt.
+ [5 <./sg_opt_smh.png> <./sg_opt_smh_J.png>] [6]
+<sto_sg_opt_smh.png, id=32, 462.528pt x 338.2236pt>
+File: sto_sg_opt_smh.png Graphic file (type png)
+<use sto_sg_opt_smh.png>
+Package pdftex.def Info: sto_sg_opt_smh.png  used on input line 251.
+(pdftex.def)             Requested size: 357.75677pt x 292.69357pt.
+ [7]
+<sto_sg_opt_smh_J.png, id=37, 462.528pt x 338.2236pt>
+File: sto_sg_opt_smh_J.png Graphic file (type png)
+<use sto_sg_opt_smh_J.png>
+Package pdftex.def Info: sto_sg_opt_smh_J.png  used on input line 253.
+(pdftex.def)             Requested size: 357.75677pt x 292.69357pt.
+ [8 <./sto_sg_opt_smh.png> <./sto_sg_opt_smh_J.png>] (hm3.aux) ) 
 Here is how much of TeX's memory you used:
- 4666 strings out of 492973
- 62054 string characters out of 3138154
- 335228 words of memory out of 3000000
- 8465 multiletter control sequences out of 15000+200000
+ 4660 strings out of 492973
+ 62137 string characters out of 3138154
+ 339228 words of memory out of 3000000
+ 8455 multiletter control sequences out of 15000+200000
  12426 words of font info for 46 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  41i,6n,40p,345b,1815s stack positions out of 5000i,500n,10000p,200000b,50000s
-<D:/APPLICATIONS/Miktex/fonts/type1/public/amsfonts/cm/cmbx1
-2.pfb><D:/APPLICATIONS/Miktex/fonts/type1/public/amsfonts/cm/cmr10.pfb><D:/APPL
-ICATIONS/Miktex/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/APPLICATIONS/Mikte
-x/fonts/type1/public/amsfonts/cm/cmr17.pfb><D:/APPLICATIONS/Miktex/fonts/type1/
-public/amsfonts/cm/cmtt10.pfb>
-Output written on hm3.pdf (5 pages, 93158 bytes).
+<D:/APPLICATION
+S/Miktex/fonts/type1/public/amsfonts/cm/cmbx12.pfb><D:/APPLICATIONS/Miktex/font
+s/type1/public/amsfonts/cm/cmr10.pfb><D:/APPLICATIONS/Miktex/fonts/type1/public
+/amsfonts/cm/cmr12.pfb><D:/APPLICATIONS/Miktex/fonts/type1/public/amsfonts/cm/c
+mr17.pfb><D:/APPLICATIONS/Miktex/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on hm3.pdf (8 pages, 187727 bytes).
 PDF statistics:
- 41 PDF objects out of 1000 (max. 8388607)
+ 60 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
