@@ -1,7 +1,7 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6800 64-bit) (preloaded format=xelatex 2018.9.22)  18 OCT 2018 13:19
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6800 64-bit) (preloaded format=pdflatex 2018.9.22)  17 OCT 2018 21:39
 entering extended mode
-**"C:/Users/Roxanne/Documents/GitHub/master-class/EECS-545/homework 3/hm3.tex"
-("C:/Users/Roxanne/Documents/GitHub/master-class/EECS-545/homework 3/hm3.tex"
+**C:/Users/Roxanne/Documents/GitHub/master-class/MATH-623/hm2/hm2.tex
+(C:/Users/Roxanne/Documents/GitHub/master-class/MATH-623/hm2/hm2.tex
 LaTeX2e <2018-04-01> patch level 5
 (D:\APPLICATIONS\Miktex\tex\latex\base\article.cls
 Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
@@ -55,10 +55,10 @@ Package: color 2016/07/10 v1.1e Standard LaTeX Color (DPC)
 (D:\APPLICATIONS\Miktex\tex\latex\graphics-cfg\color.cfg
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
-Package color Info: Driver file: xetex.def on input line 147.
+Package color Info: Driver file: pdftex.def on input line 147.
 
-(D:\APPLICATIONS\Miktex\tex\latex\graphics-def\xetex.def
-File: xetex.def 2017/06/24 v5.0h Graphics/color driver for xetex
+(D:\APPLICATIONS\Miktex\tex\latex\graphics-def\pdftex.def
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
 ))
 (C:\Users\Roxanne\AppData\Roaming\MiKTeX\2.9\tex\latex\listings\lstlang1.sty
 File: lstlang1.sty 2018/09/02 1.7 listings language file
@@ -78,7 +78,7 @@ Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
 (D:\APPLICATIONS\Miktex\tex\latex\graphics-cfg\graphics.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
-Package graphics Info: Driver file: xetex.def on input line 99.
+Package graphics Info: Driver file: pdftex.def on input line 99.
 )
 \Gin@req@height=\dimen107
 \Gin@req@width=\dimen108
@@ -183,8 +183,8 @@ Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 \Gm@layoutvoffset=\dimen125
 \Gm@dimlist=\toks21
 
-(D:\APPLICATIONS\Miktex\tex\xelatex\xetexconfig\geometry.cfg)) (hm3.aux)
-\openout1 = `hm3.aux'.
+(D:\APPLICATIONS\Miktex\tex\latex\geometry\geometry.cfg)) (hm2.aux)
+\openout1 = `hm2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 38.
 LaTeX Font Info:    ... okay on input line 38.
@@ -194,14 +194,74 @@ LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 38.
 LaTeX Font Info:    ... okay on input line 38.
 LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 38.
 LaTeX Font Info:    ... okay on input line 38.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 38.
-LaTeX Font Info:    ... okay on input line 38.
 LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 38.
 LaTeX Font Info:    ... okay on input line 38.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 38.
 LaTeX Font Info:    ... okay on input line 38.
 \c@lstlisting=\count111
 
+(C:\Users\Roxanne\AppData\Roaming\MiKTeX\2.9\tex\context\base\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count112
+\scratchdimen=\dimen126
+\scratchbox=\box30
+\nofMPsegments=\count113
+\nofMParguments=\count114
+\everyMPshowfont=\toks22
+\MPscratchCnt=\count115
+\MPscratchDim=\dimen127
+\MPnumerator=\count116
+\makeMPintoPDFobject=\count117
+\everyMPtoPDFconversion=\toks23
+) (D:\APPLICATIONS\Miktex\tex\latex\oberdiek\epstopdf-base.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+(D:\APPLICATIONS\Miktex\tex\generic\oberdiek\infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(D:\APPLICATIONS\Miktex\tex\latex\oberdiek\grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+
+(D:\APPLICATIONS\Miktex\tex\generic\oberdiek\kvdefinekeys.sty
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+
+(D:\APPLICATIONS\Miktex\tex\generic\oberdiek\ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)))
+(D:\APPLICATIONS\Miktex\tex\latex\oberdiek\kvoptions.sty
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+
+(D:\APPLICATIONS\Miktex\tex\generic\oberdiek\kvsetkeys.sty
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+
+(D:\APPLICATIONS\Miktex\tex\generic\oberdiek\etexcmds.sty
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+
+(D:\APPLICATIONS\Miktex\tex\generic\oberdiek\ifluatex.sty
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+(D:\APPLICATIONS\Miktex\tex\generic\oberdiek\pdftexcmds.sty
+Package: pdftexcmds 2018/01/30 v0.27 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+)
+*geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
 * driver: pdftex
@@ -243,30 +303,33 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 39.
 
 (D:\APPLICATIONS\Miktex\tex\latex\amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1
+)
+<p_s_0.jpg, id=1, 843.15pt x 632.3625pt>
+File: p_s_0.jpg Graphic file (type jpg)
+<use p_s_0.jpg>
+Package pdftex.def Info: p_s_0.jpg  used on input line 68.
+(pdftex.def)             Requested size: 357.73576pt x 292.69466pt.
+ [1
 
-] [2]
-File: Robust_Regression.png Graphic file (type bmp)
-<Robust_Regression.png>
- [3] [4]
-File: sg_opt_smh.png Graphic file (type bmp)
-<sg_opt_smh.png>
-File: sg_opt_smh_J.png Graphic file (type bmp)
-<sg_opt_smh_J.png>
- [5]
-[6] [7]
-File: sto_sg_opt_smh.png Graphic file (type bmp)
-<sto_sg_opt_smh.png>
-File: sto_sg_opt_smh_J.png Graphic file (type bmp)
-<sto_sg_opt_smh_J.png>
- [8] [9] (hm3.aux) ) 
+{C:/Users/Roxanne/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] [2 <./p_s
+_0.jpg>] (hm2.aux) ) 
 Here is how much of TeX's memory you used:
- 3451 strings out of 427798
- 44585 string characters out of 3152742
- 345957 words of memory out of 3000000
- 7409 multiletter control sequences out of 15000+200000
- 11118 words of font info for 49 fonts, out of 3000000 for 9000
- 1328 hyphenation exceptions out of 8191
- 27i,6n,40p,728b,1584s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 4554 strings out of 492973
+ 60771 string characters out of 3138154
+ 337228 words of memory out of 3000000
+ 8353 multiletter control sequences out of 15000+200000
+ 12426 words of font info for 46 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 41i,6n,40p,336b,1250s stack positions out of 5000i,500n,10000p,200000b,50000s
+<D:/APPLICATIONS/Miktex/fonts/type1/public/amsfonts/cm/cmbx
+12.pfb><D:/APPLICATIONS/Miktex/fonts/type1/public/amsfonts/cm/cmmi12.pfb><D:/AP
+PLICATIONS/Miktex/fonts/type1/public/amsfonts/cm/cmr10.pfb><D:/APPLICATIONS/Mik
+tex/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/APPLICATIONS/Miktex/fonts/type
+1/public/amsfonts/cm/cmr17.pfb><D:/APPLICATIONS/Miktex/fonts/type1/public/amsfo
+nts/cm/cmtt10.pfb>
+Output written on hm2.pdf (2 pages, 89084 bytes).
+PDF statistics:
+ 34 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
-Output written on hm3.pdf (9 pages).

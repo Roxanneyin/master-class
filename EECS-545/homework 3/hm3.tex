@@ -38,6 +38,14 @@
 \begin{document}\large
 \maketitle
 \begin{spacing}{1.2}  %from {setspace}
+\section*{Problem 1}
+The result is:
+\begin{lstlisting}
+Estimated omega is: 0.6486572567576243 -0.06324140302684156
+Estimated b is: -34.083439600883615
+Using remainder for estimating MSE is: 21.485893070546425
+Predicted response at the input x=[100 100] is: 24.458145772194662
+\end{lstlisting}
 \section*{Problem 2}
 \subsection*{(b) \& (c)}
 The code and result is as follows:
@@ -156,7 +164,8 @@ for j in range(Iteration):
     J.append(Loss/n + lamda/2 * np.dot(omega, omega))
     b -= alpha * u[0]; omega[0] -= alpha * u[1]; omega[1] -= alpha * u[2]
 
-print(b[0,0], omega[0], omega[1])
+print("Parameters of estimated hyperplane are: b = ", b[0,0], "w_1 = ", omega[0], "w_2 = ", omega[1])
+print("the minimum achieved value of the objective function is: ", min(J))
 t = pl.frange(0,8,0.01)
 n = pl.frange(1,Iteration)
 plt.plot(t, -omega[0]/omega[1] * t - b[0,0]/omega[1], label = 'learned line')
@@ -251,6 +260,9 @@ The plots showing the data and the learned line, and showing J as a function of 
 \includegraphics[width=4.95in,height=4.05in]{sto_sg_opt_smh.png}
 
 \includegraphics[width=4.95in,height=4.05in]{sto_sg_opt_smh_J.png}
+
+\subsection*{(d)}
+According to the two plots of objective value above, we can see that with same iteration times, clearly stochastic subgradient method converges faster than subgradient method. This is because subgradient method focuses on the global gradient that can let parameters iterate straightly to the steepest descent direction, while stochastic subgradient method focuses on the descent direction of current data $i (i \in 1, \cdots, N)$. For one iteration time, subgradient method only take one step to optimal solution but stochastic subgradient has taken N steps to optimal solution where N is the size of data. It's reasonable that SGD converges faster.
 
 \end{spacing}
 \end{document}
