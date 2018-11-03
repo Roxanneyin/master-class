@@ -8,7 +8,6 @@ y = bodyfat_data['y']
 n,d = x.shape
 train_num = 150; m = n - train_num
 x_train = x[:train_num,:]; x_test = x[train_num:,:]
-x_train_bar = np.mean(x_train, axis=0)
 y_train = y[:train_num]; y_test = y[train_num:]
 y_train_bar = np.mean(y_train)
 
@@ -28,9 +27,9 @@ def dist2(x,c):
 sigma = 15; lamda = 0.003
 kernel = np.exp(-1/2/sigma**2 * dist2(x_train, x_train))
 kernel_prime = np.exp(-1/2/sigma**2 * dist2(x_train, x_test))
-On = 1/train_num * np.ones([train_num, train_num]); Om = 1/m * np.ones([m, m])
-kernel_tilda = kernel - kernel.dot(On) - On.dot(kernel) + (On.dot(kernel)).dot(On)
-kernel_prime_tilda = kernel_prime - kernel_prime.dot(Om) - On.dot(kernel_prime) + (On.dot(kernel_prime)).dot(Om)
+O1 = 1/train_num * np.ones([train_num, m]); O2 = 1/train_num * np.ones([train_num, train_num])
+kernel_tilda = kernel - kernel.dot(O2) - O2.dot(kernel) + (O2.dot(kernel)).dot(O2)
+kernel_prime_tilda = kernel_prime - kernel.dot(O1) - O2.dot(kernel_prime) + (O2.dot(kernel)).dot(O1)
 
 # Kernel ridge regression with offset
 y_pre_train = []
@@ -53,5 +52,5 @@ print("MSE for test data is: ", MSE_test[0])
 # Compute offset b
 b = y_train_bar - (np.mat(y_train - y_train_bar).T
                    * np.mat(kernel_tilda + train_num * lamda * np.eye(train_num)).I
-                   * np.mat(kernel.dot(On)[:,0] - ((On.dot(kernel)).dot(On))[0,0]).T)[0,0]
+                   * np.mat(kernel.dot(O2)[:,0] - ((O2.dot(kernel)).dot(O2))[0,0]).T)[0,0]
 print("offset b is: ", b)
