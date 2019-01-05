@@ -3,8 +3,8 @@ a = log(K) - 3 * sigma * T^0.5 - (r - sigma^2 / 2) * T;
 b = log(K) + 3 * sigma * T^0.5 + abs(r - sigma^2 / 2) * T;
 M = 556; dt = T / M; dx = (b - a) / N; u = zeros(M + 1, N + 1);
 alpha0 = 1 - sigma^2 * dt / dx^2;
-alpha1 = sigma^2 * dt / (2 * dx^2) + (r - sigma^2 / 2) * dt / dx;
-alpha2 = sigma^2 * dt / (2 * dx^2) - (r - sigma^2 / 2) * dt / dx;
+alpha1 = sigma^2 * dt / (2 * dx^2) + (r - sigma^2 / 2) * dt / dx / 2;
+alpha2 = sigma^2 * dt / (2 * dx^2) - (r - sigma^2 / 2) * dt / dx / 2;
 for i = 1 : (N + 1)
     u(1, i) = max(0, K - exp(a + (i - 1) * dx));
 end

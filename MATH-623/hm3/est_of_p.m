@@ -3,8 +3,8 @@ r = 0.02; sigma = 0.2; K = 1; T = 1; L = 0.5; N = 100; M = fix(T / x);
 a = log(L); b = log(K) + 3 * sigma * T^0.5 + abs(r - sigma^2 / 2) * T;
 dt = T / M; dx = (b - a) / N;
 alpha0 = 1 - sigma^2 * dt / dx^2;
-alpha1 = sigma^2 * dt / (2 * dx^2) + (r - sigma^2 / 2) * dt / dx;
-alpha2 = sigma^2 * dt / (2 * dx^2) - (r - sigma^2 / 2) * dt / dx;
+alpha1 = sigma^2 * dt / (2 * dx^2) + (r - sigma^2 / 2) * dt / dx / 2;
+alpha2 = sigma^2 * dt / (2 * dx^2) - (r - sigma^2 / 2) * dt / dx / 2;
 for i = 1 : (N + 1)
     u(1, i) = max(0, exp(a + (i - 1) * dx) - K);
 end
@@ -18,10 +18,10 @@ for i = 2 : (M + 1)
     end
 end
 for i = 1 : (N + 1)
-    if ((a + dx * (i - 1) <= 0) & (a + dx * i > 0))
+    if ((a + dx * (i - 1) < 0) & (a + dx * i >= 0))
         q = i;
     end
 end
-y = (u(M + 1, q) + u(M + 1, q + 1)) / 2;
+y = u(M + 1, q + 1);
 end
 
