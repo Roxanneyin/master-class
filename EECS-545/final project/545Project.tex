@@ -78,7 +78,9 @@ Group 61\\
 \maketitle
 
 \begin{abstract}
-  This is abstract.
+  In this report, we analyzed the relationship between investor attention and stock return in China A-share market. We firstly divided stock returns into four classes by their quantile and changed our problem into a classfication problem. And then, we used extreme gradient boosting tree (XGBoost) model to predict stock returns. By adding investor attention factors, we improved roughly 7\% model performance in stock return prediction compared with using only classic financial factors. It shows that investor attention factors act as a useful feature on explaining stock returns.\\
+\\
+  keywords: investor attention, XGBoost, stock return
 \end{abstract}
 
 \section{Problem statement and motivation}
@@ -86,15 +88,15 @@ Group 61\\
 
 Most financial models assume that all investors are rational, which means for those investors following the same principle, their reactions to the same specific event should be the same optimal one. However, it is often not the case in the real world. Studies have shown that stock returns do have some relationships with investors' behavior. Due to human nature, even a relatively rational investor can waver under consecutive bad news, regardless of the credibility of the news. 
 
-In general, investors can be classified into two types, which are industry investors and individual investors. For industry investors, they usually have their own research department or have relative reliable third-party information with regard to the stocks they invest in, hence their movements are more likely based on their own research result, rather than some unreliable news. For individual investors, upon hearing the news, they may not have the resource or ability to verify personally, hence they are more likely to make trading decision on those news and become the main driver of sentiment based stock movements.
+In general, investors can be classified into two types, which are industry investors and individual investors. For industry investors, they usually have their own research department or have relative reliable third-party information with regard to the stocks they invest in, hence their movements are more likely based on their own research result, rather than some unreliable news. For individual investors, upon hearing the news, they may not have the resource or ability to verify personally, hence they are more likely to make trading decision based on those news and become the main driver of sentiment based stock movements.
 
-This makes us wonder, is there a relationship between the individual investors' behaviors and common stock returns? Does the investors' attention on news affect the movements of stocks and can we detect the it?
+This makes us wonder, is there a relationship between the individual investors' behaviors and common stock returns? Does the investors' attention on news affect the movements of stocks and can we detect them?
 
-These questions are valuable if we can make use of them during investment decision making process. For example if a certain magnitude of invester inttention can potentially increase the fluctuation of stock price, or even push the stock price to a specific direction, then a detector can be built to signal or warn our shareholders to prevent a potential loss due to the quick move of stock price.
+These questions are valuable if we can make use of them during investment decision making process. For example if a certain magnitude of investor attention can potentially increase the fluctuation of stock price, or even push the stock price to a specific direction, then a detector can be built to signal or warn our shareholders to prevent a potential loss due to the quick move of stock price.
 
 Mathematically, the above process can be simplified to a classification problem. Based on different attention features\footnote{These features will be further discussed in section 3.}, if a classifier can be built to yield a prediction of stock returns, say "perform among the best 25\% stocks" or "perform among the worst 25\% stocks", then it can act as a tool during investment decision making and potentially create a considerable return.
 
-The rest parts of this paper provide a more detailed analysis of above proposition. Section \ref{literature_review} explains the historical process of investors' behavior as well as the result of different related research. Later in section \ref{material_method}, the exact model architecture will be provided along with all variables used inside the model. After that, the result will be evaluated and displayed in section \ref{model_evaluation}.
+The rest parts of this paper provide a more detailed analysis of above proposition. Section \ref{literature_review} explains the historical process of investors' behavior as well as the result of different related research. Later in Section \ref{material_method}, the exact model architecture will be provided along with all variables used inside the model. After that, the result will be evaluated and displayed in Section \ref{model_evaluation}.
 
 
 \section{Literature review}
@@ -106,7 +108,7 @@ In the past, investors usually get financial market information from financial n
 
 "Sentiment Analysis" is what researchers provided to analyze the relationship between investor's behavior and investment return. When news is available to investors, they will first have their own interpretation on the news and react as market sentiments, then the financial market will be affected by these sentiments.
 
-Recent study has shown that sentiment analysis could be applied to find the relationship between social media and stock return. By using sentiment analysis, Yangyu[2] pointed out that different type of social media would have various effects on the stock return. Besides, other studies have shown that it could also be used to analyze cryptocurrency market returns. Tianyu Ray[3] has mentioned that social media platforms such as Twitter could be used to capture investor sentiment, and would gain the early signal for the future price fluctuation for Bitcoin market. Furthermore, strong evidence for herding behaviors among individual investors in China A and B-share markets has been found few years ago[4]. It's not hard to notice that these studies have provided us a different perspective to explain the equity return. 
+Recent study has shown that sentiment analysis could be applied to find the relationship between social media and stock return. By using sentiment analysis, Yangyu[2] pointed out that different types of social media would have various effects on the stock return. Besides, other studies have shown that it could also be used to analyze cryptocurrency market returns. Tianyu Ray[3] has mentioned that social media platforms such as Twitter could be used to capture investor sentiment, and would gain the early signal for the future price fluctuation for Bitcoin market. Furthermore, strong evidence for herding behaviors among individual investors in China A and B-share markets has been found few years ago[4]. It's not hard to notice that these studies have provided us a different perspective to explain the stock return. 
 
 To use technical tools to track the movements in stock markets, researchers found that the stock price is generally a dynamic, non-parametric, chaotic and noisy process. To fully describe the process with mathematical expression is rather difficult. However, in recent years researchers found that using machine learning algorithms to predict the movements in financial markets performed very well. Early models used in stock forecasting involved statistical methods such as time series modeling and multivariate analysis [5][6][7]. Shubharthi Dey mentioned that using XGBoost to predict the direction of stock price had outstanding performance on accuracy[8]. Also Tianyu Ray Li usesd XGBoost to predict the price of cryptocurrency based on sentiment analysis with outperformed results.
 
@@ -119,12 +121,11 @@ To use technical tools to track the movements in stock markets, researchers foun
 \label{material_method}
 Based on what we have mentioned before, we will use individual investor's behavior data along with XGBoost to analyze the relationship between individual investor's behavior and investment return for the following reasons:
 
-(i) XGBoost is a scalable tree boosting system, which could be used in all scenarios. Since the algorithm itself has the scalability property, it would provide us with unlimited freedom by adding more children nodes on the preexisting parents nodes when needed. Which means, we would not stagnate and meet limitations by the number of data. Now, we may track with the features in one trading day, but it is possible for us to deal with some features gathered in per hour. This makes our model more adaptable for other assets with larger daily information volumes. 
+(i) XGBoost is a scalable tree boosting system, which could be used in most scenarios. Since the algorithm itself has the scalability property, it would provide us with unlimited freedom by adding more children nodes on the preexisting parents nodes when needed. Which means, we would not stagnate and meet limitations by the number of data. Now, we may track with the features in one trading day, but it is possible for us to deal with some features gathered in per hour. This makes our model more adaptable for other assets with larger daily information volumes. 
 
-(ii) Tree models are not sensitive to specific range of data and features. There is no need for us to do much preparations for the data before applying the XGBoost model. We just need to find proper labels, reasonable features, and acquire plentiful and manageable size of data. 
+(ii) Tree models are not sensitive to specific range of data and features. There is no need to do much preparations for the data before applying the XGBoost model as long as one has proper labels, reasonable features, and acquire plentiful and manageable size of data. 
 
-(iii) XGBoost is a rule based learning method, which could unveil the potential relationship between features.
-
+(iii) XGBoost is a rule based learning method, which could unveil the potential relationship among features.
 
 \subsection{Variable explanation}
 \subsubsection{Return}
@@ -134,21 +135,21 @@ r_{t}^{(i)}=\frac{p_{t+1}^{(i)}-p_{t}^{(i)}}{p_{t}^{(i)}}
 $$
 where $p_{t}^{(i)}$ is the stock price at time $t$. The return represents the percentage of money made or lost on an investment during a given period.
 
-Stock return can be regarded as a continuous variable. However making a point estimation of return value is often unreliable[9], therefore we classified the return into 4 categories and the model provides only a general direction of stock movement. The four categories are defined based on quantiles, which are "return lies on bottom 25\% among all stocks", "return lies on 25-50 quantile", "return lies on 50-75 quantile" and "return lies on top 25\%". 
+Stock return can be regarded as a continuous variable. However, making a point estimation of return value is often unreliable[9]. Therefore, we classified the return into 4 categories and the model provides only a general direction of stock movement. The four categories are defined based on quantiles, which are "return lies on bottom 25\% among all stocks", "return lies on 25-50 quantile", "return lies on 50-75 quantile" and "return lies on top 25\%". 
 \subsubsection{Click}
 
 Click number $c^{(i)}_{t}$ represents the number of clicks at time $t$ for stock $i$ by all stock application users from our database.
 
 \subsubsection{Favorite percent}
 
-Follow percent $f^{(i)}_{t}$ denotes the percentage number of investors following on stock $i$ on day $t$. The word "follow" means investors would prefer some stocks and pay more attention to them, and then they added the stocks into their own watchlist. 
+Favorite percent $f^{(i)}_{t}$ denotes the percentage number of investors following on stock $i$ on day $t$. The word "follow" means investors would prefer some stocks and pay more attention to them, and then they added the stocks into their own watchlist. 
 
 
 \subsubsection{Financial factors}
 
 There are several factors such as market return, company size effect, etc. that would be part of the explanation of stock return[10]. Fama and French [11][12] mentioned that a basket of factors could be used in explaining stock return. 
 
-To analyze whether investor attention features are useful, a reasonalbe approach is to extract the part of return that is not fully explained by the basket of factors. Or in other words, we would apply these common factors in our model as the original model, and then update the model using investor attention data. If the performance of the new model is better than that of the original model, then a further discussion can be conducted. 
+To analyze whether investor attention features are useful, a reasonable approach is to extract the part of return that is not fully explained by the basket of factors. Or in other words, we would apply these common factors in our model as the original model, and then update the model using investor attention data. If the performance of the new model is better than that of the original model, then a further discussion can be conducted. 
 
 \subsection{Model and algorithm}
 
@@ -272,31 +273,95 @@ Note here $\gamma$ is the minimum required structure score, $L$ is the maximum n
 \section{Model evaluation}
 \label{model_evaluation}
 
-For each stock time series, the accuracy of predicting return labels varies from XXX to XXX with the mean XXX. Features includes the click numbers, favorite percentage, and their derivants based on the customer types. Moreover, classic factors are also included in features. Based on comparing the results of whether including investment behavior features or not, we can regard click numbers as an essential feature explaining this day?s return. The feature importance graph and confusion matrix examples are shown below.
+Features include the click numbers(representing as "CLICK"), favorite percentage(representing as "FAVORITE\_PERCENT\_x"). Moreover, classic financial factors are also included in features. 
 
+Using above model, the accuracy of predicting each stock's return varies, with an overall accuracy of 49.58\% for all test data. As comparison, using only financial factors yields a relative poor result of 42.66\%.
+
+Figure 1 and figure 2 are two confusion matrices based on real label. The first figure uses only financial factors and second figure is generated through using additional investor attention features.
+
+The labels range from $0$ to $3$, representing "return lies on bottom 25\% among all stocks", "return lies on 25-50 quantile", "return lies on 50-75 quantile" and "return lies on top 25\%" respectively. For each grid, the row label indicates the true label; column label indicates the predicted label and the numbers inside represent the accuracy. For example number 0.22 in second row and fourth column of figure 1 indicates that 22\% of sample with real label 0 was classified into label 3 by our model.
 
 \begin{figure}[htbp]
   \begin{minipage}[t]{0.5\linewidth}
   \centering
-  \includegraphics[width=0.7\textwidth]{heatmap_noclick.png}
-  \caption{Heatmap that has no click data}
+  \includegraphics[width=0.72\textwidth]{heatmap_noclick.png}
+  \caption{True label basis, no click data}
   \end{minipage}
   \begin{minipage}[t]{0.5\linewidth}
   \centering
-  \includegraphics[width=0.7\textwidth]{heatmap_hasclick.png}
-  \caption{Heatmap that has click data}
+  \includegraphics[width=0.72\textwidth]{heatmap_hasclick.png}
+  \caption{True label basis, with click data}
   \end{minipage}
 \end{figure}
 
+Figure 3 and figure 4 are generated similarly, but instead of each row, now each column has a summation of 1. For example number 0.084 in second row and fourth column of figure 3 indicates that among all test data with predicted label 3, 8.4\% of them are misclassified and have true label 1.
+
+\begin{figure}[htbp]
+  \begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[width=0.72\textwidth]{pic4_heatmap_noclick.png}
+  \caption{Predicted label basis, no click data}
+  \end{minipage}
+  \begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[width=0.72\textwidth]{pic3_heatmap_hasclick.png}
+  \caption{Pridicted label basis, with click data}
+  \end{minipage}
+\end{figure}
+
+The confusion matrix shed a light on how the "CLICK" and "FAVORITE\_PERCENT\_x" can help with explaining the stock return and its direction. This can be observed by having the increment of diagonal value of figure 2 and 4 in contrast with figure 1 and 3. 
+
+More importantly, from figure 4 one can observe that the accuracy among group 0 and 3 is better than group 1 and 2. That is to say, we can trust more on the model when the predicted label is 0 or 3.
+
+However, these figures show one drawback of the model: it is not quite accurate when the true label is 1 or 2, or equivalently, the model performs only good at predicting the extreme situation(top 25\% or botton 25\%).
+
+
+
+Based on the result of different feature combinations, we can regard "CLICK" as an essential feature explaining return.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{barplot.png}
+  \caption{Feature Importance}
+\end{figure}
+
+From the feature importance graph in figure 5, we can see that "CLICK" is the most important feature here. Feature importance is calculated by taking the average of f-score among all stocks with respect to each feature separately. "CLICK" contributes to 12\% splits, which is the most important feature. The traditional factor "comovement" contributes to 11\% splits. "FAVORITE\_PERCENT\_x" only takes around 7\% in the splits feature selection. Feature importance varies among different stocks but the order of the features remains almost unchanged. In a word, "CLICK" and "FAVORITE\_PERCENT\_x"  are features that can be added as new explanatory variables for stock return.
+
+Below provides an example of our tree splitting process for stock with code "000968". One can observe that "CLICK" and "FAVORITE\_PERCENT\_x" are used extensively in tree structure building.
+
+\begin{figure}[htbp]
+  \begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[width=0.8\textwidth]{968-0.jpeg}
+  \caption{Tree structure example 1}
+  \end{minipage}
+  \begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[width=0.8\textwidth]{968-5.jpeg}
+  \caption{Tree structure example 2}
+  \end{minipage}
+\end{figure}
 
 \section{Conclusion}
 \label{conclusion}
-In this project, we applied XGBoost to stock market by adding features of investor attention such as click numbers and favorite percentage by investors . By tuning the parameters of XGBoost, we find XXX works best. Click number serves as the main engine to provide effective explanatory power among those sentiment analysis features. Favorite percentage and other multi-collinear terms may do harm to the whole model. 
-%Click number can also predict next day?s return although the explanatory power and accuracy are not as strong as in explaining the same day return.
 
+In this project, we applied XGBoost algorithm to learn to fit the stocks' return by using features of investor attention and sentiment analysis such as click numbers and stocks favorite percentage by investors, and several other financial factors. 
 
+We found that model performs better at predicting extreme situation for stock return, which can potentially be used to signal
+or warn shareholders to prevent a potential loss due to the quick move of stock price. However, model performs poorly in predicting relative moderate return, which is one potential drawback. Further research could be conducted by solving this problem and improving the performance. 
 
-\section{Description of Individual Effort}
+Besides, feature click number makes great efforts on predicting stocks' return. Favorite percentage also contribute as an important feature. Click number serves as the main engine to provide effective explanatory power among those sentiment analysis and investor attention features. Also we can see that XGBoost provides with a great learning algorithm in financial market, which can be applied on other financial market prediction problems by later researchers.
+
+All available data and code are provided here.\footnote{Code: https://drive.google.com/open?id=0B3rYDUzGrMm4NXlrTmc1NHhZQVY3RW9yclprV1ROaHpPLVdr
+Data: https://drive.google.com/open?id=1AynNVyb1D9y1DI0oVexFYJgBK6bxVkj1}
+
+\section{Description of individual effort}
+
+Yuankang Xiong: Raw data cleaning and feature importance evaluation; algorithm design. \\
+Rui Xiao: Raw data cleaning and feature importance evaluation; algorithm design.\\
+Yuan Yin: Coding and parameter tuning; model evaluation.\\
+Yifei Lu: Coding and parameter tuning; model evaluation.\\
+The essay wrting are completed by the whole group with equal effort.
 
 \section*{References}
 [1]O. Netzer, R. Feldman, J. Goldenberg, M. Fresko. "Mine your own business: market-structure surveillance through text mining." Marketing Science(05)(2012): vol. 31(3), pp. 521-543
@@ -304,7 +369,7 @@ In this project, we applied XGBoost to stock market by adding features of invest
 [2]YangYu, Wenjing Duan, Qing Cao. "The impact of social and conventional media on firm equity value: A sentiment analysis approach 
 Decision Support Systems." Decision Support Systems(11)(2013): vol. 55(4), pp. 919-926
 
-[3]Li, Tianyu Ray, et al. "Sentiment-based prediction of alternative cryptocurrency price fluctuations using gradient boosting tree model." arXiv preprint arXiv:1805.00558 (2018). 
+[3]Li, Tianyu Ray, et al. "Sentiment-based prediction of alternative cryptocurrency price fluctuations using gradient boosting tree model." arXiv preprint arXiv:1805.00558 (2018).  
 
 [4]Yao, Juan, Chuanchan Ma, and William Peng He. "Investor herding behaviour of Chinese stock market." International Review of Economics \& Finance 29 (2014): pp. 12-29
 
@@ -315,7 +380,7 @@ change rate prediction with simple technical trading rules." Journal of Internat
 
 [7]Timmermann, A., Granger, C. W.  "Efficient market hypothesis and forecasting." International Journal of Forecasting(2004): vol. 20(1), pp. 15-27 
 
-[8]Dey, Shubharthi, et al. Forecasting to Classification: Predicting the direction of stock market price using Xtreme Gradient Boosting. Working paper. DOI: 10.13140/RG. 2.2. 15294.48968
+[8]Dey, S., Kumar, Y., Saha, S. and Basak, S., Forecasting to Classification: Predicting the direction of stock market price using Xtreme Gradient Boosting. Working paper. DOI: 10.13140/RG. 2.2. 15294.48968.
 
 [9]Qiu, Mingyue, and Yu Song. "Predicting the direction of stock market index movement using an optimized artificial neural network model." PloS one 11.5 (2016): e0155133
 
