@@ -2,278 +2,571 @@
 using namespace std;
 
 /* Program Header - Yuan Yin, 
-This is a program to compute area between cubic function and X-axis 
-or give exact number of rectangles needed to approximate the area
-to reach user given precision, 01-27-2019 */
+This is a program to define three classes to represent 
+colors, images and locations within an image, 02-07-2019 */
 
-const int RECT_LIM = 100; /* This the upper bound of rectangles to be tried 
-to approximate the area */
-const int APPRO_AREA = 1; /* This represents the first choice of the menu, 
-to approximate the area with user define parameters. */
-const int RECT_NEED = 2; /* This represents the second choice of the menu,
-to approximate the number of rectangles needed 
-to achieve the precision user defined */
-const int EXIT = 3; /* This represents the third chioce of the menu, 
-exit the program */
+const int FULL = 1000; //The full(maximum) value of a color
+const int EMPTY = 0; //The minimum value of a color
+const int DEFAULT = -99999; //Initialization to col and row
+const int ROW = 10, COL = 18; //Row and Col of the array
 
-//Function: printMenu - Print out the choices for users to choose
-void printMenu();
+class ColorClass
+{
+  private:
+    int red; //Red color
+    int green; //Greed color
+    int blue; //Blue color
+    bool clip(int &color); //Out of range value clip into range
+    bool colorChanged(
+        int &inRed, 
+        int &inGreen, 
+        int &inBlue
+        ); // Tell if the RGB color has changed
+  
+  public:
+    ColorClass(); //This is a default ctor function
+    ColorClass(int inRed, int inGreen, int inBlue);
+    //This is a value ctor function
+    void setToBlack(); //Set RGB into color black
+    void setToRed(); //Set RGB into color red
+    void setToGreen(); //Set RGB into color green
+    void setToBlue(); //Set RGB into color blue
+    void setToWhite(); //Set RGB into color white
+    bool setTo(int inRed, int inGreen, int inBlue);
+    //Set RGB value as input within range
+    bool setTo(ColorClass &inColor); //Set all color to same value
+    bool addColor(ColorClass &rhs); //Add RGB value to color object
+    bool subtractColor(ColorClass &rhs); //Subtract value to color
+    bool adjustBrightness(double adjFactor); //Adjust brightness
+    void printComponentValues(); //Print RGB values
+};
 
-/* Function: toThePower - Raise the "val" to the power "power" 
-and return the result */
-double toThePower(double val, int power);
+class RowColumnClass
+{
+  private:
+    int row; //Row location
+    int col; //Column location
 
-/* Function: evaluateCubicFormula - Test the result value of cubic formula 
-and return true if value is non-negative, return false if it's negative */
-bool evaluateCubicFormula(
-    double aCoeff, 
-    double bCoeff, 
-    double cCoeff, 
-    double dCoeff, 
-    double xValue, 
-    double &resultVal
-    );
+  public:
+    RowColumnClass(); //default ctor
+    RowColumnClass(int inRow, int inCol); //value ctor
+    void setRowCol(int inRow, int inCol); //Set row and col values
+    void setRow(int inRow); //Set row value
+    void setCol(int inCol); //Set col value
+    int getRow(); //Return row value
+    int getCol(); //Return col value
+    void addRowColTo(RowColumnClass &inRowCol); //Add row and col to it
+    void printRowCol(); //Print row and col values
+};
 
-/* Function: approximateAreaWithRect - Compute the area between cubic function 
-and X-axis */
-double approximateAreaWithRect(
-    double aCoeff, 
-    double bCoeff, 
-    double cCoeff, 
-    double dCoeff, 
-    double startX, 
-    double endX, 
-    int numRects
-    );
+class ColorImageClass
+{
+  private:
+    ColorClass image[ROW][COL]; //The image array
+
+  public:
+    ColorImageClass(); //Default ctor
+    void initializeTo(ColorClass &inColor); //Initialize the image by input
+    bool addImageTo(ColorImageClass &rhsImg); //Add RGB value to each pixel
+    bool addImages(int numImgsToAdd, ColorImageClass imagesToAdd[]);
+    //Set images with the sum of all inputs
+    bool setColorAtLocation(
+        RowColumnClass &inRowCol, 
+        ColorClass &inColor
+        ); //Change the color in specified location and tell if valid
+    bool getColorAtLocation(
+        RowColumnClass &inRowCol,
+        ColorClass &outColor
+        ); //Get the RGB values at valid location
+    void printImage(); //Print the image to screen
+};
+
+#ifdef ANDREW_TEST
+#include "andrewTest.h"
+#else
 
 int main()
 {
-    int choice = 0; //The choice according to the menu by users, initialize with 0
-    int numRects; //Number of rectangles used to approximate area
-    double aCoeff; //Coefficient for x^3 term in cubic function
-    double bCoeff; //Coefficient for x^2 term in cubic function
-    double cCoeff; //Coefficient for x term in cubic function
-    double dCoeff; //Coefficient for constant term in cubic function
-    double startX; //Start point of the interval to be computed
-    double endX; //End point of the interval to be computed
-    double area; //Area of the sum of rectangles
-    double corrAns; //Correct answer of the area between cubic function and X-axis
-    double precision; //Precision that users want to acchive to approximate area
-    double errorArea; //Error between correct answer and answer computed by program
-    bool acchivePre = false; /* To test if using no more than 100 rectangles can 
-    reach to the user defined precision, initialized with false */
-    
-    cout.precision(6); //Set all double type output to be precised to 6 digits
+    ColorClass testColor;
+    RowColumnClass testRowCol;
+    RowColumnClass testRowColOther(111, 222);
+    ColorImageClass testImage;
+    ColorImageClass testImages[3];
 
-    while(choice != EXIT)
+    //Test some basic ColorClass operations...
+    cout << "Initial: ";
+    testColor.printComponentValues();
+    cout << endl;
+
+    testColor.setToBlack();
+    cout << "Black: ";
+    testColor.printComponentValues();
+    cout << endl;
+
+    testColor.setToGreen();
+    cout << "Green: ";
+    testColor.printComponentValues();
+    cout << endl;
+
+    testColor.adjustBrightness(0.5);
+    cout << "Dimmer Green: ";
+    testColor.printComponentValues();
+    cout << endl;
+
+    //Test some basic RowColumnClass operations...
+    cout << "Want defaults: ";
+    testRowCol.printRowCol();
+    cout << endl;
+
+    testRowCol.setRowCol(2, 8);
+    cout << "Want 2,8: ";
+    testRowCol.printRowCol();
+    cout << endl;
+
+    cout << "Want 111, 222: ";
+    testRowColOther.printRowCol();
+    cout << endl;
+
+    testRowColOther.setRowCol(4, 2);
+    testRowCol.addRowColTo(testRowColOther);
+    cout << "Want 6,10: ";
+    testRowCol.printRowCol();
+    cout << endl;
+
+    //Test some basic ColorImageClass operations...
+    testColor.setToRed();
+    testImage.initializeTo(testColor);
+
+    testRowCol.setRowCol(555, 5);
+    cout << "Want: Color at [555,5]: Invalid Index!" << endl;
+    cout << "Color at ";
+    testRowCol.printRowCol();
+    cout << ": ";
+    if (testImage.getColorAtLocation(testRowCol, testColor))
     {
-        
-        printMenu();
-        
-        cout << "YOUR CHOICE: ";
-        cin >> choice;
-        
-        if (choice == APPRO_AREA || choice == RECT_NEED)
-        {
-            cout << "Enter (a b c d) for function y = a*x^3 + b*x^2 + c*x + d: ";
-            cin >> aCoeff >> bCoeff >> cCoeff >> dCoeff;
-            
-            cout << "Now enter x start and end values: ";
-            cin >> startX >> endX;
-            
-            if (choice == APPRO_AREA)
-            {
-                cout << "Enter the number of rectangles to use: ";
-                cin >> numRects;
-                
-                area = approximateAreaWithRect(
-                    aCoeff, 
-                    bCoeff, 
-                    cCoeff, 
-                    dCoeff, 
-                    startX, 
-                    endX, 
-                    numRects
-                    );
-                
-                cout << "Rectangle result is: " << area << endl;
-            }
-            else
-            {
-                cout << "Enter correct answer: ";
-                cin >> corrAns;
-                
-                cout << "Enter precision to reach: ";
-                cin >> precision;
-
-                numRects = 1; // Initialize numRects with 1 and to be added to 100
-
-                do{
-                    area = approximateAreaWithRect(
-                        aCoeff,
-                        bCoeff,
-                        cCoeff,
-                        dCoeff,
-                        startX,
-                        endX,
-                        numRects
-                        );
-                    errorArea = area - corrAns;
-
-                    numRects++;
-                }
-                while(numRects <= RECT_LIM && 
-                    (errorArea > precision || errorArea < -precision));
-
-                if (numRects <= RECT_LIM && 
-                    errorArea <= precision && errorArea >= - precision)
-                {
-                    cout << 
-                    "Rectangles needed to reach precision: " 
-                    << --numRects 
-                    << endl;
-                }
-                else
-                {
-                    cout << 
-                    "Tried 100 rectangles without reaching precision" 
-                    << endl;
-                }
-
-                for (numRects = 1; numRects <= RECT_LIM; numRects++)
-                {
-                    area = approximateAreaWithRect(
-                        aCoeff, 
-                        bCoeff, 
-                        cCoeff, 
-                        dCoeff, 
-                        startX, 
-                        endX, 
-                        numRects
-                        );
-                    errorArea = area - corrAns;
-                    
-                    if (errorArea <= precision && errorArea >= -precision)
-                    {
-                        acchivePre = true;
-                        break;
-                    }
-                }
-                
-                if (acchivePre)
-                {
-                    cout << 
-                    "Rectangles needed to reach precision: " 
-                    << numRects 
-                    << endl;
-                    
-                }
-                else
-                {
-                    cout << 
-                    "Tried 100 rectangles without reaching precision" 
-                    << endl;
-                }
-            }
-        }
-        else
-        {
-            cout << "Thanks for using this program" << endl;
-        }
-    }
-
-    return (0);
-}
-
-void printMenu()
-{
-    cout << "1 Approximate Integral Using Rectangles"  << endl;
-    cout << "2 Experiment With Rectangle Precision" << endl;
-    cout << "3 Quit The Program" << endl;
-
-    return;
-}
-
-double toThePower(double val, int power)
-{
-    int i; //For loop index
-    double powerVal = 1.0; //The result of the power of value, initialized with 1
-    
-    for (i = 1; i <= power; i++)
-    {
-        powerVal = powerVal * val;
-    }
-
-    return (powerVal);
-}
-
-bool evaluateCubicFormula(
-    double aCoeff, 
-    double bCoeff, 
-    double cCoeff, 
-    double dCoeff, 
-    double xValue, 
-    double &resultVal
-    )
-{
-    resultVal = 
-    aCoeff * toThePower(xValue, 3) 
-    + bCoeff * toThePower(xValue, 2) 
-    + cCoeff * xValue 
-    + dCoeff; //Compute the value of cubic function at point xValue
-
-    if (resultVal < 0)
-    {
-        return (false);
+      testColor.printComponentValues();
     }
     else
     {
-        return (true);
+      cout << "Invalid Index!";
+    }
+    cout << endl;
+
+    testRowCol.setRow(4);
+    cout << "Want: Color at [4,5]: R: 1000 G: 0 B: 0" << endl;
+    cout << "Color at ";
+    testRowCol.printRowCol();
+    cout << ": ";
+    if (testImage.getColorAtLocation(testRowCol, testColor))
+    {
+      testColor.printComponentValues();
+    }
+    else
+    {
+      cout << "Invalid Index!";
+    }
+    cout << endl;
+
+    //Set up an array of images of different colors
+    testColor.setToRed();
+    testColor.adjustBrightness(0.25);
+    testImages[0].initializeTo(testColor);
+    testColor.setToBlue();
+    testColor.adjustBrightness(0.75);
+    testImages[1].initializeTo(testColor);
+    testColor.setToGreen();
+    testImages[2].initializeTo(testColor);
+
+    //Modify a few individual pixel colors
+    testRowCol.setRowCol(4, 2);
+    testColor.setToWhite();
+    testImages[1].setColorAtLocation(testRowCol, testColor);
+
+    testRowCol.setRowCol(2, 4);
+    testColor.setToBlack();
+    testImages[2].setColorAtLocation(testRowCol, testColor);
+
+    //Add up all images in testImages array and assign result
+    //to the testImage image
+    testImage.addImages(3, testImages);
+
+    //Check some certain values
+    cout << "Added values:" << endl;
+    for (int colInd = 0; colInd < 8; colInd += 2)
+    {
+      testRowCol.setRowCol(4, colInd);
+      cout << "Color at ";
+      testRowCol.printRowCol();
+      cout << ": ";
+      if (testImage.getColorAtLocation(testRowCol, testColor))
+      {
+        testColor.printComponentValues();
+      }
+      else
+      {
+        cout << "Invalid Index!";
+      }
+      cout << endl;
+    }
+  
+    for (int rowInd = 0; rowInd < 8; rowInd += 2)
+    {
+      testRowCol.setRowCol(rowInd, 4);
+      cout << "Color at ";
+      testRowCol.printRowCol();
+      cout << ": ";
+      if (testImage.getColorAtLocation(testRowCol, testColor))
+      {
+        testColor.printComponentValues();
+      }
+      else
+      {
+        cout << "Invalid Index!";
+      }
+    cout << endl;
+    }
+  
+    cout << "Printing entire test image:" << endl;
+    testImage.printImage();
+
+    return 0;
+}
+
+
+#endif
+
+bool ColorClass::clip(int &color)
+{
+    bool isClip = false; //Tell if it clips
+
+    if (color > FULL)
+    {
+        color = FULL;
+        isClip = true;
+    }
+    else if (color < EMPTY)
+    {
+        color = EMPTY;
+        isClip = true;
+    }
+
+    return(isClip);
+}
+
+bool ColorClass::colorChanged(
+    int &inRed, 
+    int &inGreen, 
+    int &inBlue
+    )
+{
+    bool hasChanged = false; //Tell if color has changed
+    if (clip(inRed) || clip(inBlue) || clip(inGreen))
+    {
+        clip(inRed);
+        clip(inBlue);
+        clip(inGreen);
+        hasChanged = true;
+    }
+
+    return (hasChanged);
+}
+
+ColorClass::ColorClass()
+{
+    red = FULL;
+    green = FULL;
+    blue = FULL;
+}
+
+ColorClass::ColorClass(
+    int inRed,
+    int inGreen,
+    int inBlue
+    )
+{
+    clip(inRed);
+    clip(inGreen);
+    clip(inBlue);
+    red = inRed;
+    green = inGreen;
+    blue = inBlue;
+}
+
+void ColorClass::setToBlack()
+{
+    red = EMPTY;
+    green = EMPTY;
+    blue = EMPTY;
+}
+
+void ColorClass::setToRed()
+{
+    red = FULL;
+    green = EMPTY;
+    blue = EMPTY;
+}
+
+void ColorClass::setToGreen()
+{
+    red = EMPTY;
+    green = FULL;
+    blue = EMPTY;
+}
+
+void ColorClass::setToBlue()
+{
+    red = EMPTY;
+    green = EMPTY;
+    blue = FULL;
+}
+
+void ColorClass::setToWhite()
+{
+    red = FULL;
+    green = FULL;
+    blue = FULL;
+}
+
+bool ColorClass::setTo(
+    int inRed,
+    int inGreen,
+    int inBlue
+    )
+{
+    bool isClip; //Tell if value is out of range
+
+    isClip = colorChanged(inRed, inGreen, inBlue);
+
+    red = inRed;
+    green = inGreen;
+    blue = inBlue;
+
+    return(isClip);
+}
+
+bool ColorClass::setTo(ColorClass &inColor)
+{
+    bool isClip; //Tell if it's out of range
+
+    isClip = setTo(inColor.red, inColor.green, inColor.blue);
+
+    return (isClip);
+}
+
+bool ColorClass::addColor(ColorClass &rhs)
+{
+    bool isClip; //Tell if it's out of range
+
+    red += rhs.red;
+    green += rhs.green;
+    blue += rhs.blue;
+
+    isClip = colorChanged(red, green, blue);
+
+    return (isClip);
+}
+
+bool ColorClass::subtractColor(ColorClass &rhs)
+{
+    bool isClip; //Tell if it's out of range
+
+    red -= rhs.red;
+    green -= rhs.green;
+    blue -= rhs.blue;
+
+    isClip = colorChanged(red, green, blue);
+
+    return (isClip);
+}
+
+bool ColorClass::adjustBrightness(double adjFactor)
+{
+    bool isClip; //Tell if it's out of range
+
+    red = int(red * adjFactor);
+    green = int(green * adjFactor);
+    blue = int(blue * adjFactor);
+
+    isClip = colorChanged(red, green, blue);
+
+    return (isClip);
+}
+
+void ColorClass::printComponentValues()
+{
+    cout << "R:" << red << "G:" << green << "B:" << blue;
+}
+
+RowColumnClass::RowColumnClass()
+{
+    row = DEFAULT;
+    col = DEFAULT;
+}
+
+RowColumnClass::RowColumnClass(int inRow, int inCol)
+{
+    row = inRow;
+    col = inCol;
+}
+
+void RowColumnClass::setRowCol(int inRow, int inCol)
+{
+    row = inRow;
+    col = inCol;
+}
+
+void RowColumnClass::setRow(int inRow)
+{
+    row = inRow;
+}
+
+void RowColumnClass::setCol(int inCol)
+{
+    col = inCol;
+}
+
+int RowColumnClass::getRow()
+{
+    return (row);
+}
+
+int RowColumnClass::getCol()
+{
+    return (col);
+}
+
+void RowColumnClass::addRowColTo(RowColumnClass &inRowCol)
+{
+    row += inRowCol.row;
+    col += inRowCol.col;
+}
+
+void RowColumnClass::printRowCol()
+{
+    cout << "[" << row << "," << col << "]";
+}
+
+ColorImageClass::ColorImageClass()
+{
+    int row, col; //Represent the row and col of the image
+    for (row = 0; row < ROW; row++)
+    {
+        for (col = 0; col < COL; col++)
+        {
+            image[row][col].setToBlack();
+        }
     }
 }
 
-double approximateAreaWithRect(
-    double aCoeff, 
-    double bCoeff, 
-    double cCoeff, 
-    double dCoeff, 
-    double startX, 
-    double endX, 
-    int numRects
-    )
+void ColorImageClass::initializeTo(ColorClass &inColor)
 {
-    int i; //For loop index
-    double width; //This is the width of each rectangle
-    double midPoint; //This is the midpoint of rectangle
-    double area = 0; /* This is the approximate area 
-    between cubic function and X-axis, initialized with 0 */
-    double midVal; //This is the value of cubic function at midpoints
-    bool signOfVal; /* Test sign of value at specific point of cubic function, 
-    true if it's non-negative, false if it's negative*/
-    
-    width = (endX - startX) / numRects;
-    
-    for (i = 0; i < numRects; i++)
+    int row, col; //Represent the row and col of the image
+    for (row = 0; row < ROW; row++)
     {
-        midPoint = startX + width / 2 + width * i;
-        signOfVal = evaluateCubicFormula(
-            aCoeff, 
-            bCoeff, 
-            cCoeff, 
-            dCoeff, 
-            midPoint, 
-            midVal
-            );
-        
-        if (signOfVal)
+        for (col = 0; col < COL; col++)
         {
-            area += midVal * width;
+            image[row][col].setTo(inColor);
         }
-        else
+    }
+}
+
+bool ColorImageClass::addImageTo(ColorImageClass &rhsImg)
+{
+    int row, col; //Represent the row and col of image
+    bool isClip = false; //Tell if the value of color has ever clipped
+    for (row = 0; row <ROW; row++)
+    {
+        for (col = 0; col < COL; col++)
         {
-            area -= midVal * width;
+            if (image[row][col].addColor(rhsImg.image[row][col]))
+            {
+                isClip = true;
+            }
         }
     }
 
-    return (area);
+    return (isClip);
+}
+
+bool ColorImageClass::addImages(
+    int numImgsToAdd, 
+    ColorImageClass imagesToAdd[]
+    )
+{
+    int i, row, col; //For loop index
+    bool isClip = false; //Tell if the value of color has ever clipped
+
+    for (i = 1; i < numImgsToAdd; i++)
+    {
+        if (imagesToAdd[0].addImageTo(imagesToAdd[i]))
+        {
+            isClip = true;
+        }
+    }
+
+    for (row = 0; row < ROW; row++)
+    {
+        for (col = 0; col < COL; col++)
+        {
+            image[row][col] = imagesToAdd[0].image[row][col];
+        }
+    }
+
+    return (isClip);
+}
+
+bool ColorImageClass::setColorAtLocation(
+    RowColumnClass &inRowCol, 
+    ColorClass &inColor
+    )
+{
+    int row, col; //The location for changed value
+    bool valid = false; //Tell if the change is valid
+
+    row = inRowCol.getRow();
+    col = inRowCol.getCol();
+    if (row < ROW && row >= 0 && col < COL && col >= 0)
+    {
+        valid = true;
+        image[row][col].setTo(inColor);
+    }
+
+    return (valid);
+}
+
+bool ColorImageClass::getColorAtLocation(
+    RowColumnClass &inRowCol,
+    ColorClass &outColor
+    )
+{
+    int row, col; //The location to get RGB value
+    bool valid = false; //Tell if location is valid
+
+    row = inRowCol.getRow();
+    col = inRowCol.getCol();
+    if (row < ROW && row >= 0 && col < COL && col >= 0)
+    {
+        valid = true;
+        outColor.setTo(image[row][col]);
+    }
+
+    return (valid);
+}
+
+void ColorImageClass::printImage()
+{
+    int i, j; //For loop index
+
+    for (i = 0; i < ROW; i++)
+    {
+        image[i][0].printComponentValues();
+
+        for (j = 1; j < COL; j++)
+        {
+            cout << "--";
+            image[i][j].printComponentValues();
+        }
+
+        cout << endl;
+    }
 }
