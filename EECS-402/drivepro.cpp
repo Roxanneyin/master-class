@@ -1,572 +1,1093 @@
 #include <iostream>
+#include <cstdlib>
+#include <fstream>
+#include <string>
 using namespace std;
 
-/* Program Header - Yuan Yin, 
-This is a program to define three classes to represent 
-colors, images and locations within an image, 02-07-2019 */
+const string ATTRNAME = "Space Mountain"; //Attractions name
+const int SEAT_NUM = 20; //Seats available for a car
 
-const int FULL = 1000; //The full(maximum) value of a color
-const int EMPTY = 0; //The minimum value of a color
-const int DEFAULT = -99999; //Initialization to col and row
-const int ROW = 10, COL = 18; //Row and Col of the array
+const int RIDER = 1, CAR = 2;
 
-class ColorClass
+const int START_TIME = 0;
+const int MIN_RIDER = 0, MAX_RIDER = 100;
+const double MAX_PERC = 100; //Maximum number for percentage
+const int ARG_NUM = 2;
+
+//The list node class will be the data type for individual nodes of
+//a doubly-linked data structure.
+template < class T >
+class LinkedNodeClass
 {
   private:
-    int red; //Red color
-    int green; //Greed color
-    int blue; //Blue color
-    bool clip(int &color); //Out of range value clip into range
-    bool colorChanged(
-        int &inRed, 
-        int &inGreen, 
-        int &inBlue
-        ); // Tell if the RGB color has changed
+    LinkedNodeClass *prevNode; //Will point to the node that comes before
+                               //this node in the data structure. Will be
+                               //NULL if this is the first node.
+    T nodeVal;               //The value contained within this node.
+    LinkedNodeClass *nextNode; //Will point to the node that comes after
+                               //this node in the data structure. Will be
+                               //NULL if this is the last node.
+  public:
+    //The ONLY constructor for the linked node class - it takes in the
+    //newly created node's previous pointer, value, and next pointer,
+    //and assigns them.
+    LinkedNodeClass(
+      LinkedNodeClass *inPrev, //Address of node that comes before this one
+      const T &inVal,        //Value to be contained in this node
+      LinkedNodeClass *inNext  //Address of node that comes after this one
+      );
+
+    //Returns the value stored within this node.
+    T getValue() const;
+
+    //Returns the address of the node that follows this node.
+    LinkedNodeClass* getNext() const;
+
+    //Returns the address of the node that comes before this node.
+    LinkedNodeClass* getPrev() const;
+
+    //Sets the object's next node pointer to NULL.
+    void setNextPointerToNull();
+
+    //Sets the object's previous node pointer to NULL.
+    void setPreviousPointerToNull();
+
+    //This function DOES NOT modify "this" node. Instead, it uses
+    //the pointers contained within this node to change the previous
+    //and next nodes so that they point to this node appropriately.
+    //In other words, if "this" node is set up such that its prevNode
+    //pointer points to a node (call it "A"), and "this" node's
+    //nextNode pointer points to a node (call it "B"), then calling
+    //setBeforeAndAfterPointers results in the node we're calling
+    //"A" to be updated so its "nextNode" points to "this" node, and
+    //the node we're calling "B" is updated so its "prevNode" points
+    //to "this" node, but "this" node itself remains unchanged.
+    void setBeforeAndAfterPointers();
+};
+
+//The sorted list class does not store any data directly. Instead,
+//it contains a collection of LinkedNodeClass objects, each of which
+//contains one element.
+template < class T >
+class SortedListClass
+{
+  private:
+    LinkedNodeClass< T > *head; //Points to the first node in a list, or NULL
+                           //if list is empty.
+    LinkedNodeClass< T > *tail; //Points to the last node in a list, or NULL
+                           //if list is empty.
+  public:
+    //Default Constructor. Will properly initialize a list to
+    //be an empty list, to which values can be added.
+    SortedListClass();
+
+    //Copy constructor. Will make a complete (deep) copy of the list, such
+    //that one can be changed without affecting the other.
+    SortedListClass(
+      const SortedListClass< T > &rhs
+      );
+
+    //Destructor. Responsible for making sure any dynamic memory
+    //associated with an object is freed up when the opject is
+    //being destroyed.
+    ~SortedListClass();
+
+    //Clears the list to an empty state without resulting in any
+    //memory leaks.
+    void clear();
+
+    //Allows the user to insert a value into the list. Since this
+    //is a sorted list, there is no need to specify where in the list
+    //to insert the element. It will insert it in the appropriate
+    //location based on the value being inserted. If the node value
+    //being inserted is found to be "equal to" one or more node values
+    //already in the list, the newly inserted node will be placed AFTER
+    //the previously inserted nodes.
+    void insertValue(
+      const T &valToInsert //The value to insert into the list
+      );
+
+    //Prints the contents of the list from head to tail to the screen.
+    //Begins with a line reading "Forward List Contents Follow:", then
+    //prints one list element per line, indented two spaces, then prints
+    //the line "End Of List Contents" to indicate the end of the list.
+    void printForward() const;
+
+    //Prints the contents of the list from tail to head to the screen.
+    //Begins with a line reading "Backward List Contents Follow:", then
+    //prints one list element per line, indented two spaces, then prints
+    //the line "End Of List Contents" to indicate the end of the list.
+    void printBackward() const;
+
+    //Removes the front item from the list and returns the value that
+    //was contained in it via the reference parameter. If the list
+    //was empty, the function returns false to indicate failure, and
+    //the contents of the reference parameter upon return is undefined.
+    //If the list was not empty and the first item was successfully
+    //removed, true is returned, and the reference parameter will
+    //be set to the item that was removed.
+    bool removeFront(
+      T &theVal
+      );
+
+    //Removes the last item from the list and returns the value that
+    //was contained in it via the reference parameter. If the list
+    //was empty, the function returns false to indicate failure, and
+    //the contents of the reference parameter upon return is undefined.
+    //If the list was not empty and the last item was successfully
+    //removed, true is returned, and the reference parameter will
+    //be set to the item that was removed.
+    bool removeLast(
+      T &theVal
+      );
+
+    //Returns the number of nodes contained in the list.
+    int getNumElems() const;
+
+    //Provides the value stored in the node at index provided in the
+    //0-based "index" parameter. If the index is out of range, then outVal
+    //remains unchanged and false is returned. Otherwise, the function
+    //returns true, and the reference parameter outVal will contain
+    //a copy of the value at that location.
+    bool getElemAtIndex(
+      const int index,
+      T &outVal
+      ) const;
+};
+
+template < class T >
+class FIFOQueueClass
+{
+  private:
+    LinkedNodeClass< T > *head; //Points to the first node in a queue, or NULL
+                           //if queue is empty.
+    LinkedNodeClass< T > *tail; //Points to the last node in a queue, or NULL
+                           //if queue is empty.
+  public:
+    //Default Constructor. Will properly initialize a queue to
+    //be an empty queue, to which values can be added.
+    FIFOQueueClass();
+
+    //Destructor. Responsible for making sure any dynamic memory
+    //associated with an object is freed up when the object is
+    //being destroyed.
+    ~FIFOQueueClass();
+
+    //Inserts the value provided (newItem) into the queue.
+    void enqueue(
+      const T &newItem
+      );
+
+    //Attempts to take the next item out of the queue. If the
+    //queue is empty, the function returns false and the state
+    //of the reference parameter (outItem) is undefined. If the
+    //queue is not empty, the function returns true and outItem
+    //becomes a copy of the next item in the queue, which is
+    //removed from the data structure.
+    bool dequeue(
+      T &outItem
+      );
+
+    //Prints out the contents of the queue. All printing is done
+    //on one line, using a single space to separate values, and a
+    //single newline character is printed at the end.
+    void print() const;
+
+    //Returns the number of nodes contained in the queue.
+    int getNumElems() const;
+    
+    //Clears the queue to an empty state without resulting in any
+    //memory leaks.
+    void clear();
+};
+
+//This class represents every event, including the type of rider of car,
+//also their arriving time.
+class EventClass
+{
+  private:
+    int type; //Type of each event
+    int time; //arrive time for each event
+  public:
+    //Default ctor for eventclass.
+    EventClass();
+
+    //Ctor that define variables of eventclass when claim.
+    EventClass(
+      const int &inType,
+      const int &inTime
+      );
+
+    //Get the type of the event.
+    int getType() const;
+
+    //Get the time of the event.
+    int getTime() const;
+
+    //Following are three different definitions for three operators.
+    bool operator <= (
+      const EventClass &rhs
+      );
+
+    bool operator > (
+      const EventClass &rhs
+      );
+    
+    void operator = (
+      const EventClass &rhs
+      );
+};
+
+class SimulationClass
+{
+  private:
+    int closingTime;
+    double riderArrMean, riderArrStd;
+    int carArrMin, carArrMax;
+    double percSFP, percFP, percSTD;
+    int numSFP, numFP, numSTD;
+
+    int seatAval;
+
+    SortedListClass < EventClass > eventList;
+
+    FIFOQueueClass < int > queueSTD;
+    FIFOQueueClass < int > queueFP;
+    FIFOQueueClass < int > queueSFP;
+
+    int totalSFP, totalFP, totalSTD;
+    int totalRider;
+    int totalCar;
+    int maxSFP, maxFP, maxSTD;
+
+  public:
+    SimulationClass();
+
+    //To check if the simulation parameters file can be successfully read.
+    bool readPara(
+      const string fileName
+      );
+
+    //This is to handle each event so that we can finish simulation.
+    void handleEvent();
+
+    //This is to schedule next event and add it into the eventlist.
+    void scheduleEvent(int nextType, int currentTime);
+    void printStats();
+    bool listEmpty();
+};
+
+//This is called once at the beginning of program execution
+//to set the seed of the pseudo-random number generator.
+void setSeed(
+    const int seedVal
+    );
+
+//Returns an integer value from a uniform distribution 
+//between the specified min and max values.
+int getUniform(
+     const int min,
+     const int max
+     );
+
+//Returns an integer drawn from a normal distribution
+//described by the input mean and standard deviation
+//values...
+int getNormal(
+     const double mean,
+     const double stdDev
+     );
+
+int main(int argc, char *argv[])
+{
+  int seedVal;
+  string paraFileName;
+  SimulationClass sim;
+
+  if (argc != ARG_NUM)
+    {
+      cout << "You should also input simulation parameter file!" << endl;
+      cout << "Please input your parameter file name: " << endl;
+      cin >> paraFileName;
+    }
+  else
+  {
+    cout << "Read simulation parameters from: " << argv[1] << endl;
+    paraFileName = argv[1];
+  }
+
+  cout << "Please input a seed value: " << endl;
+  cin >> seedVal;
+  setSeed(seedVal);
+
+  cout << "This is a " << ATTRNAME << " simulation process!" << endl;
+  if (sim.readPara(paraFileName))
+  {
+    cout << "Simulation parameters read successful: Yes" << endl;
+
+    sim.scheduleEvent(RIDER, START_TIME);
+    sim.scheduleEvent(CAR, START_TIME);
+    while(!sim.listEmpty())
+    {
+      sim.handleEvent();
+    }
+
+    sim.printStats();
+  }
+
+  return (0);
+}
+
+/*---------------Member functions for LinkedNodeClass---------------*/
+
+template < class T >
+LinkedNodeClass< T >::LinkedNodeClass(
+  LinkedNodeClass *inPrev,
+  const T &inVal,
+  LinkedNodeClass *inNext
+  )
+{
+  prevNode = inPrev;
+  nodeVal = inVal;
+  nextNode = inNext;
+}
+
+template < class T >
+T LinkedNodeClass< T >::getValue() const
+{
+  return (nodeVal);
+}
+
+template < class T >
+LinkedNodeClass< T >* LinkedNodeClass< T >::getNext() const
+{
+  return (nextNode);
+}
+
+template < class T >
+LinkedNodeClass< T >* LinkedNodeClass< T >::getPrev() const
+{
+  return (prevNode);
+}
+
+template < class T >
+void LinkedNodeClass< T >::setNextPointerToNull()
+{
+  nextNode = 0;
+}
+
+template < class T >
+void LinkedNodeClass< T >::setPreviousPointerToNull()
+{
+  prevNode = 0;
+}
+
+template < class T >
+void LinkedNodeClass< T >::setBeforeAndAfterPointers()
+{
+  if (prevNode != 0)
+  {
+    prevNode -> nextNode = this;
+  }
+  if (nextNode != 0)
+  {
+    nextNode -> prevNode = this;
+  }
+}
+
+/*---------------Member functions for SortedListClass---------------*/
+
+template < class T >
+SortedListClass< T >::SortedListClass()
+{
+  head = 0;
+  tail = 0;
+}
+
+template < class T >
+SortedListClass< T >::SortedListClass(
+  const SortedListClass< T > &rhs
+  )
+{
+  LinkedNodeClass< T > *copyListPtr = rhs.head;
+  LinkedNodeClass< T > *temp;
+  int num = 0;
+    
   
-  public:
-    ColorClass(); //This is a default ctor function
-    ColorClass(int inRed, int inGreen, int inBlue);
-    //This is a value ctor function
-    void setToBlack(); //Set RGB into color black
-    void setToRed(); //Set RGB into color red
-    void setToGreen(); //Set RGB into color green
-    void setToBlue(); //Set RGB into color blue
-    void setToWhite(); //Set RGB into color white
-    bool setTo(int inRed, int inGreen, int inBlue);
-    //Set RGB value as input within range
-    bool setTo(ColorClass &inColor); //Set all color to same value
-    bool addColor(ColorClass &rhs); //Add RGB value to color object
-    bool subtractColor(ColorClass &rhs); //Subtract value to color
-    bool adjustBrightness(double adjFactor); //Adjust brightness
-    void printComponentValues(); //Print RGB values
-};
+  //This is the condition when rhs is a NULL list.
+  if (copyListPtr == 0)
+  {
+    head = 0;
+    tail = 0;
+  }
 
-class RowColumnClass
-{
-  private:
-    int row; //Row location
-    int col; //Column location
-
-  public:
-    RowColumnClass(); //default ctor
-    RowColumnClass(int inRow, int inCol); //value ctor
-    void setRowCol(int inRow, int inCol); //Set row and col values
-    void setRow(int inRow); //Set row value
-    void setCol(int inCol); //Set col value
-    int getRow(); //Return row value
-    int getCol(); //Return col value
-    void addRowColTo(RowColumnClass &inRowCol); //Add row and col to it
-    void printRowCol(); //Print row and col values
-};
-
-class ColorImageClass
-{
-  private:
-    ColorClass image[ROW][COL]; //The image array
-
-  public:
-    ColorImageClass(); //Default ctor
-    void initializeTo(ColorClass &inColor); //Initialize the image by input
-    bool addImageTo(ColorImageClass &rhsImg); //Add RGB value to each pixel
-    bool addImages(int numImgsToAdd, ColorImageClass imagesToAdd[]);
-    //Set images with the sum of all inputs
-    bool setColorAtLocation(
-        RowColumnClass &inRowCol, 
-        ColorClass &inColor
-        ); //Change the color in specified location and tell if valid
-    bool getColorAtLocation(
-        RowColumnClass &inRowCol,
-        ColorClass &outColor
-        ); //Get the RGB values at valid location
-    void printImage(); //Print the image to screen
-};
-
-#ifdef ANDREW_TEST
-#include "andrewTest.h"
-#else
-
-int main()
-{
-    ColorClass testColor;
-    RowColumnClass testRowCol;
-    RowColumnClass testRowColOther(111, 222);
-    ColorImageClass testImage;
-    ColorImageClass testImages[3];
-
-    //Test some basic ColorClass operations...
-    cout << "Initial: ";
-    testColor.printComponentValues();
-    cout << endl;
-
-    testColor.setToBlack();
-    cout << "Black: ";
-    testColor.printComponentValues();
-    cout << endl;
-
-    testColor.setToGreen();
-    cout << "Green: ";
-    testColor.printComponentValues();
-    cout << endl;
-
-    testColor.adjustBrightness(0.5);
-    cout << "Dimmer Green: ";
-    testColor.printComponentValues();
-    cout << endl;
-
-    //Test some basic RowColumnClass operations...
-    cout << "Want defaults: ";
-    testRowCol.printRowCol();
-    cout << endl;
-
-    testRowCol.setRowCol(2, 8);
-    cout << "Want 2,8: ";
-    testRowCol.printRowCol();
-    cout << endl;
-
-    cout << "Want 111, 222: ";
-    testRowColOther.printRowCol();
-    cout << endl;
-
-    testRowColOther.setRowCol(4, 2);
-    testRowCol.addRowColTo(testRowColOther);
-    cout << "Want 6,10: ";
-    testRowCol.printRowCol();
-    cout << endl;
-
-    //Test some basic ColorImageClass operations...
-    testColor.setToRed();
-    testImage.initializeTo(testColor);
-
-    testRowCol.setRowCol(555, 5);
-    cout << "Want: Color at [555,5]: Invalid Index!" << endl;
-    cout << "Color at ";
-    testRowCol.printRowCol();
-    cout << ": ";
-    if (testImage.getColorAtLocation(testRowCol, testColor))
+  //When rhs is not a NULL list, we (deeply) copy every element to a new list.
+  while (copyListPtr != 0)
     {
-      testColor.printComponentValues();
-    }
-    else
-    {
-      cout << "Invalid Index!";
-    }
-    cout << endl;
-
-    testRowCol.setRow(4);
-    cout << "Want: Color at [4,5]: R: 1000 G: 0 B: 0" << endl;
-    cout << "Color at ";
-    testRowCol.printRowCol();
-    cout << ": ";
-    if (testImage.getColorAtLocation(testRowCol, testColor))
-    {
-      testColor.printComponentValues();
-    }
-    else
-    {
-      cout << "Invalid Index!";
-    }
-    cout << endl;
-
-    //Set up an array of images of different colors
-    testColor.setToRed();
-    testColor.adjustBrightness(0.25);
-    testImages[0].initializeTo(testColor);
-    testColor.setToBlue();
-    testColor.adjustBrightness(0.75);
-    testImages[1].initializeTo(testColor);
-    testColor.setToGreen();
-    testImages[2].initializeTo(testColor);
-
-    //Modify a few individual pixel colors
-    testRowCol.setRowCol(4, 2);
-    testColor.setToWhite();
-    testImages[1].setColorAtLocation(testRowCol, testColor);
-
-    testRowCol.setRowCol(2, 4);
-    testColor.setToBlack();
-    testImages[2].setColorAtLocation(testRowCol, testColor);
-
-    //Add up all images in testImages array and assign result
-    //to the testImage image
-    testImage.addImages(3, testImages);
-
-    //Check some certain values
-    cout << "Added values:" << endl;
-    for (int colInd = 0; colInd < 8; colInd += 2)
-    {
-      testRowCol.setRowCol(4, colInd);
-      cout << "Color at ";
-      testRowCol.printRowCol();
-      cout << ": ";
-      if (testImage.getColorAtLocation(testRowCol, testColor))
+      if (num == 0)
       {
-        testColor.printComponentValues();
+        temp = new LinkedNodeClass< T >(0, copyListPtr -> getValue(), 0);
+        head = temp;
       }
       else
       {
-        cout << "Invalid Index!";
+        temp = new LinkedNodeClass< T >(temp, copyListPtr -> getValue(), 0);
+        temp -> setBeforeAndAfterPointers();
       }
-      cout << endl;
+      tail = temp;
+      copyListPtr = copyListPtr -> getNext();
+      num ++;
+  }
+}
+
+template < class T >
+SortedListClass< T >::~SortedListClass()
+{
+  clear();
+}
+
+template < class T >
+void SortedListClass< T >::clear()
+{
+  LinkedNodeClass< T > *listPtr = head; //Used as a pointer to each node when 
+                                        //deleting nodes one by one in a list.
+  LinkedNodeClass< T > *temp;
+
+  while (listPtr != 0)
+  {
+    temp = listPtr;
+    listPtr = listPtr -> getNext();
+    delete temp;
+  }
+
+  head = 0;
+  tail = 0;
+}
+
+template < class T >
+void SortedListClass< T >::insertValue(
+  const T &valToInsert
+  )
+{
+  LinkedNodeClass< T > *listPtr = head;
+  LinkedNodeClass< T > *newNode;
+
+  if (head == 0)
+  {
+    newNode = new LinkedNodeClass< T >(0, valToInsert, 0);
+    head = newNode;
+    tail = newNode;
+  }
+  else if (head -> getValue() > valToInsert)
+  {
+    newNode = new LinkedNodeClass< T >(0, valToInsert, head);
+    newNode -> setBeforeAndAfterPointers();
+    head = newNode;
+  }
+  else if (tail -> getValue() <= valToInsert)
+  {
+    newNode = new LinkedNodeClass< T >(tail, valToInsert, 0);
+    newNode -> setBeforeAndAfterPointers();
+    tail = newNode;
+  }
+  else
+  {
+    while (listPtr -> getValue() <= valToInsert)
+    {
+      listPtr = listPtr -> getNext();
     }
+
+    newNode = 
+    new LinkedNodeClass< T >(listPtr -> getPrev(), valToInsert, listPtr);
+    newNode -> setBeforeAndAfterPointers();
+  }
+}
+
+template < class T >
+void SortedListClass< T >::printForward() const
+{
+  LinkedNodeClass< T > *listPtr = head;
   
-    for (int rowInd = 0; rowInd < 8; rowInd += 2)
+  cout << "Forward List Contents Follow:" << endl;
+  while (listPtr != 0)
+  {
+    cout << "  " << listPtr -> getValue() << endl;
+    listPtr = listPtr -> getNext();
+  }
+  cout << "End Of List Contents" << endl;
+}
+
+template < class T >
+void SortedListClass< T >::printBackward() const
+{
+  LinkedNodeClass< T > *listPtr = tail;
+
+  cout << "Backward List Contents Follow:" << endl;
+  while (listPtr != 0)
+  {
+    cout << "  " << listPtr -> getValue() << endl;
+    listPtr = listPtr -> getPrev();
+  }
+  cout << "End Of List Contents" << endl;
+}
+
+template < class T >
+bool SortedListClass< T >::removeFront(
+  T &theVal
+  )
+{
+  bool empty = false;
+  LinkedNodeClass< T > *temp = head; //Used to point a node temporarily.
+
+  if (temp == 0)
+  {
+    empty = true;
+  }
+  else if (temp -> getNext() == 0)
+  {
+    theVal = temp -> getValue();
+    delete temp;
+    head = 0;
+    tail = 0;
+    temp = 0;
+  }
+  else
+  {
+    theVal = temp -> getValue();
+    head = temp -> getNext();
+    delete temp;
+    head -> setPreviousPointerToNull();
+    temp = 0;
+  }
+
+  return (!empty);
+}
+
+template < class T >
+bool SortedListClass< T >::removeLast(
+  T &theVal
+  )
+{
+  bool empty = false;
+  LinkedNodeClass< T > *temp = tail; //Used to point a node temporarily.
+
+  if (temp == 0)
+  {
+    empty = true;
+  }
+  else if (temp -> getPrev() == 0)
+  {
+    theVal = temp -> getValue();
+    delete temp;
+    head = 0;
+    tail = 0;
+    temp = 0;
+  }
+  else
+  {
+    theVal = temp -> getValue();
+    tail = temp -> getPrev();
+    delete temp;
+    tail -> setNextPointerToNull();
+    temp = 0;
+  }
+
+  return (!empty);
+}
+
+template < class T >
+int SortedListClass< T >::getNumElems() const
+{
+  int listNum = 0;
+  LinkedNodeClass< T > *listPtr = head;
+
+  while (listPtr != 0)
+  {
+    listNum++;
+    listPtr = listPtr -> getNext();
+  }
+
+  return (listNum);
+}
+
+template < class T >
+bool SortedListClass< T >::getElemAtIndex(
+  const int index,
+  T &outVal
+  ) const
+{
+  bool valid = true;
+  int count = 0;
+  LinkedNodeClass< T > *listPtr = head;
+
+  if ((getNumElems() <= index) || (index < 0))
+  {
+    valid = false;
+  }
+  else
+  {
+    while (count <= index)
     {
-      testRowCol.setRowCol(rowInd, 4);
-      cout << "Color at ";
-      testRowCol.printRowCol();
-      cout << ": ";
-      if (testImage.getColorAtLocation(testRowCol, testColor))
+      outVal = listPtr -> getValue();
+      listPtr = listPtr -> getNext();
+      count++;
+    }
+  }
+
+  return (valid);
+}
+
+/*---------------Member functions for FIFOQueueClass---------------*/
+template < class T >
+FIFOQueueClass< T >::FIFOQueueClass()
+{
+  head = 0;
+  tail = 0;
+}
+
+template < class T >
+FIFOQueueClass< T >::~FIFOQueueClass()
+{
+  clear();
+}
+
+template < class T >
+void FIFOQueueClass< T >::enqueue(
+  const T &newItem
+  )
+{
+  LinkedNodeClass< T > *quePtr = head;
+  LinkedNodeClass< T > *newNode; 
+  if (head == 0)
+  {
+    newNode = new LinkedNodeClass< T >(0, newItem, 0);
+    head = newNode;
+    tail = newNode;
+  }
+  else
+  {
+    newNode = new LinkedNodeClass< T >(tail, newItem, 0);
+    newNode -> setBeforeAndAfterPointers();
+    tail = newNode;
+  }
+}
+
+template < class T >
+bool FIFOQueueClass< T >::dequeue(
+  T &outItem
+  )
+{
+  bool empty = false;
+  LinkedNodeClass< T > *temp = head; //Used to point a node temporarily.
+
+  if (temp == 0)
+  {
+    empty = true;
+  }
+  else if (temp -> getNext() == 0)
+  {
+    outItem = temp -> getValue();
+    delete temp;
+    head = 0;
+    tail = 0;
+    temp = 0;
+  }
+  else
+  {
+    outItem = temp -> getValue();
+    head = temp -> getNext();
+    delete temp;
+    head -> setPreviousPointerToNull();
+    temp = 0;
+  }
+
+  return (!empty);
+}
+
+template < class T >
+void FIFOQueueClass< T >::print() const
+{
+  LinkedNodeClass< T > *quePtr = head; //Used to go through every element.
+
+  while (quePtr != 0)
+  {
+    cout << quePtr -> getValue() << " ";
+    quePtr = quePtr -> getNext();
+  }
+  cout << endl;
+}
+
+template < class T >
+int FIFOQueueClass< T >::getNumElems() const
+{
+  int queNum = 0;
+  LinkedNodeClass< T > *quePtr = head; //Used to go through every element.
+
+  while(quePtr != 0)
+  {
+    queNum++;
+    quePtr = quePtr -> getNext();
+  }
+
+  return (queNum);
+}
+
+template < class T >
+void FIFOQueueClass< T >::clear()
+{
+  LinkedNodeClass< T > *quePtr = head;
+  LinkedNodeClass< T > *temp;
+
+  while(quePtr != 0)
+  {
+    temp = quePtr;
+    quePtr = quePtr -> getNext();
+    delete temp;
+  }
+  head = 0;
+  tail = 0;
+}
+
+/*---------------Member functions for EventClass---------------*/
+
+EventClass::EventClass()
+{
+  ;
+}
+
+EventClass::EventClass(
+  const int &inType,
+  const int &inTime
+  )
+{
+  type = inType;
+  time = inTime;
+}
+
+int EventClass::getType() const
+{
+  return (type);
+}
+
+int EventClass::getTime() const
+{
+  return (time);
+}
+
+bool EventClass::operator <= (
+  const EventClass &rhs
+  )
+{
+  return (time <= rhs.time);
+}
+
+bool EventClass::operator > (
+  const EventClass &rhs
+  )
+{
+  return (time > rhs.time);
+}
+
+void EventClass::operator = (
+  const EventClass &rhs
+  )
+{
+  type = rhs.type;
+  time = rhs.time;
+}
+
+/*---------------Member functions for SimulationClass---------------*/
+
+SimulationClass::SimulationClass()
+{
+  closingTime = 0;
+  riderArrMean = 0, riderArrStd = 0;
+  carArrMin = 0, carArrMax = 0;
+  percSFP = 0, percFP = 0, percSTD = 0;
+  numSFP = 0, numFP = 0, numSTD = 0;
+
+  seatAval = SEAT_NUM;
+
+  totalSFP = 0, totalFP = 0, totalSTD = 0;
+  totalRider = 0;
+  totalCar = 0;
+  maxSFP = 0, maxFP = 0, maxSTD = 0;
+}
+
+bool SimulationClass::readPara(
+  const string fileName
+  )
+{
+  ifstream inFile;
+
+  inFile.open(fileName.c_str());
+  if (inFile.fail())
+  {
+    cout << "Unable to open input file." << endl;
+    return false;
+  }
+
+  inFile >> closingTime;
+  inFile >> riderArrMean >> riderArrStd;
+  inFile >> carArrMin >> carArrMax;
+  inFile >> percSFP >> percFP;
+  inFile >> numSFP >> numFP;
+
+  inFile.close();
+
+  percSTD = MAX_PERC - percSFP - percFP;
+  numSTD = seatAval - numSFP - numFP;
+
+  return true;
+}
+
+void SimulationClass::handleEvent()
+{
+  EventClass event;
+  int nextTime, nextType;
+
+  eventList.removeFront(event);
+  if (event.getType() == RIDER)
+  {
+    totalRider++;
+    cout << "A rider arrive at time: " << event.getTime() << endl;
+
+    int riderProb = getUniform(MIN_RIDER, MAX_RIDER);
+    if (riderProb <= percSFP)
+    {
+      totalSFP++;
+      queueSFP.enqueue(event.getTime());
+      cout << "A SFP rider comes! Now there are "
+      << queueSFP.getNumElems()
+      << " people on the SFP line."
+      << endl;
+      if (queueSFP.getNumElems() >= maxSFP)
       {
-        testColor.printComponentValues();
+        maxSFP = queueSFP.getNumElems();
       }
-      else
+    }
+    else if (riderProb <= (percSFP + percFP))
+    {
+      totalFP++;
+      queueFP.enqueue(event.getTime());
+      cout << "A FP rider comes! Now there are "
+      << queueFP.getNumElems()
+      << " people on the FP line."
+      << endl;
+      if (queueFP.getNumElems() >= maxFP)
       {
-        cout << "Invalid Index!";
+        maxFP = queueFP.getNumElems();
       }
-    cout << endl;
     }
-  
-    cout << "Printing entire test image:" << endl;
-    testImage.printImage();
+    else
+    {
+      totalSTD++;
+      queueSTD.enqueue(event.getTime());
+      cout << "A STD rider comes! Now there are "
+      << queueSTD.getNumElems()
+      << " people on the STD line."
+      << endl;
+      if (queueSTD.getNumElems() >= maxSTD)
+      {
+        maxSTD = queueSTD.getNumElems();
+      }
+    }
 
-    return 0;
+    scheduleEvent(RIDER, event.getTime());
+  }
+  else if (event.getType() == CAR)
+  {
+    totalCar++;
+    cout << "A car arrive at time: " << event.getTime() << endl;
+
+    int currentSeat = seatAval;
+    int riderOnCar;
+    if (queueSFP.getNumElems() <= numSFP)
+    {
+      while (queueSFP.dequeue(riderOnCar))
+      {
+        currentSeat--;
+      }
+    }
+    else
+    {
+      currentSeat -= numSFP;
+      for (int i = 0; i < numSFP; i++)
+      {
+        queueSFP.dequeue(riderOnCar);
+      }
+    }
+
+    if (queueFP.getNumElems() <= numFP)
+    {
+      while (queueFP.dequeue(riderOnCar))
+      {
+        currentSeat--;
+      }
+    }
+    else
+    {
+      currentSeat -= numFP;
+      for (int i = 0; i < numFP; i++)
+      {
+        queueFP.dequeue(riderOnCar);
+      }
+    }
+
+    if (queueSTD.getNumElems() <= numSTD)
+    {
+      while (queueSTD.dequeue(riderOnCar))
+      {
+        currentSeat--;
+      }
+    }
+    else
+    {
+      currentSeat -= numSTD;
+      for (int i = 0; i < numSTD; i++)
+      {
+        queueFP.dequeue(riderOnCar);
+      }
+    }
+
+    while (currentSeat && queueSFP.getNumElems() != 0)
+    {
+      currentSeat--;
+      queueSFP.dequeue(riderOnCar);
+    }
+
+    while (currentSeat && queueFP.getNumElems() != 0)
+    {
+      currentSeat--;
+      queueFP.dequeue(riderOnCar);
+    }
+    while (currentSeat && queueSTD.getNumElems() != 0)
+    {
+      currentSeat--;
+      queueSTD.dequeue(riderOnCar);
+    }
+
+    cout << "This car have "
+    << seatAval - currentSeat
+    << " riders on the car."
+    << endl;
+
+    scheduleEvent(CAR, event.getTime());
+  }
+  else
+  {
+    cout << "Something wrong happened when handle an event!" << endl;
+  }
 }
 
-
-#endif
-
-bool ColorClass::clip(int &color)
+void SimulationClass::scheduleEvent(int nextType, int currentTime)
 {
-    bool isClip = false; //Tell if it clips
-
-    if (color > FULL)
+  if (nextType == RIDER)
+  {
+    int nextTime = currentTime + getNormal(riderArrMean, riderArrStd);
+    if (nextTime < closingTime)
     {
-        color = FULL;
-        isClip = true;
-    }
-    else if (color < EMPTY)
-    {
-        color = EMPTY;
-        isClip = true;
-    }
+      EventClass nextEvent(nextType, nextTime);
 
-    return(isClip);
+      eventList.insertValue(nextEvent);
+    }
+  }
+  else if (nextType == CAR)
+  {
+    int nextTime = currentTime + getUniform(carArrMin, carArrMax);
+
+    if ((queueSFP.getNumElems()
+      || queueFP.getNumElems()
+      || queueSTD.getNumElems()
+      || eventList.getNumElems())
+      || (currentTime < closingTime))
+    {
+      EventClass nextEvent(nextType, nextTime);
+
+      eventList.insertValue(nextEvent);
+    }
+  }
+  else
+  {
+    cout << "Something wrong happened when schedule next Event!" << endl;
+  }
 }
 
-bool ColorClass::colorChanged(
-    int &inRed, 
-    int &inGreen, 
-    int &inBlue
+void SimulationClass::printStats()
+{
+  cout << "Total rider number is: "
+  << totalRider << endl;
+  cout << "Total SFP rider number is: "
+  << totalSFP << endl;
+  cout << "Total FP rider number is: "
+  << totalFP << endl;
+  cout << "Total STD rider number is: "
+  << totalSTD << endl;
+  cout << "Total car number is: "
+  << totalCar << endl;
+  cout << "The max length for SFP queue is: "
+  << maxSFP << endl;
+  cout << "The max length for FP queue is: "
+  << maxFP << endl;
+  cout << "The max length for STD queue is: "
+  << maxSTD << endl; 
+  cout << "Average of every car containing riders is: "
+  << totalRider / double(totalCar) << endl;
+  cout << "The average of car occupancy is: "
+  << totalRider / double(totalCar) / seatAval * MAX_PERC
+  << "%" << endl;
+}
+
+bool SimulationClass::listEmpty()
+{
+  return (eventList.getNumElems() == 0);
+}
+
+/*---------------Global functions for random number---------------*/
+
+void setSeed(
+    const int seedVal
     )
 {
-    bool hasChanged = false; //Tell if color has changed
-    if (clip(inRed) || clip(inBlue) || clip(inGreen))
-    {
-        clip(inRed);
-        clip(inBlue);
-        clip(inGreen);
-        hasChanged = true;
-    }
-
-    return (hasChanged);
+  srand(seedVal);
 }
 
-ColorClass::ColorClass()
+int getUniform(
+     const int min,
+     const int max
+     )
 {
-    red = FULL;
-    green = FULL;
-    blue = FULL;
+  int uniRand;
+  uniRand = rand() % ((max + 1) - min) + min;
+  return (uniRand);
 }
 
-ColorClass::ColorClass(
-    int inRed,
-    int inGreen,
-    int inBlue
-    )
+int getNormal(
+     const double mean,
+     const double stdDev
+     )
 {
-    clip(inRed);
-    clip(inGreen);
-    clip(inBlue);
-    red = inRed;
-    green = inGreen;
-    blue = inBlue;
-}
+  const int NUM_UNIFORM = 12;
+  const int MAX = 1000;
+  const double ORIGINAL_MEAN = NUM_UNIFORM * 0.5;
+  double sum;
+  int i;
+  double standardNormal;
+  double newNormal;
+  int uni;
 
-void ColorClass::setToBlack()
-{
-    red = EMPTY;
-    green = EMPTY;
-    blue = EMPTY;
-}
-
-void ColorClass::setToRed()
-{
-    red = FULL;
-    green = EMPTY;
-    blue = EMPTY;
-}
-
-void ColorClass::setToGreen()
-{
-    red = EMPTY;
-    green = FULL;
-    blue = EMPTY;
-}
-
-void ColorClass::setToBlue()
-{
-    red = EMPTY;
-    green = EMPTY;
-    blue = FULL;
-}
-
-void ColorClass::setToWhite()
-{
-    red = FULL;
-    green = FULL;
-    blue = FULL;
-}
-
-bool ColorClass::setTo(
-    int inRed,
-    int inGreen,
-    int inBlue
-    )
-{
-    bool isClip; //Tell if value is out of range
-
-    isClip = colorChanged(inRed, inGreen, inBlue);
-
-    red = inRed;
-    green = inGreen;
-    blue = inBlue;
-
-    return(isClip);
-}
-
-bool ColorClass::setTo(ColorClass &inColor)
-{
-    bool isClip; //Tell if it's out of range
-
-    isClip = setTo(inColor.red, inColor.green, inColor.blue);
-
-    return (isClip);
-}
-
-bool ColorClass::addColor(ColorClass &rhs)
-{
-    bool isClip; //Tell if it's out of range
-
-    red += rhs.red;
-    green += rhs.green;
-    blue += rhs.blue;
-
-    isClip = colorChanged(red, green, blue);
-
-    return (isClip);
-}
-
-bool ColorClass::subtractColor(ColorClass &rhs)
-{
-    bool isClip; //Tell if it's out of range
-
-    red -= rhs.red;
-    green -= rhs.green;
-    blue -= rhs.blue;
-
-    isClip = colorChanged(red, green, blue);
-
-    return (isClip);
-}
-
-bool ColorClass::adjustBrightness(double adjFactor)
-{
-    bool isClip; //Tell if it's out of range
-
-    red = int(red * adjFactor);
-    green = int(green * adjFactor);
-    blue = int(blue * adjFactor);
-
-    isClip = colorChanged(red, green, blue);
-
-    return (isClip);
-}
-
-void ColorClass::printComponentValues()
-{
-    cout << "R:" << red << "G:" << green << "B:" << blue;
-}
-
-RowColumnClass::RowColumnClass()
-{
-    row = DEFAULT;
-    col = DEFAULT;
-}
-
-RowColumnClass::RowColumnClass(int inRow, int inCol)
-{
-    row = inRow;
-    col = inCol;
-}
-
-void RowColumnClass::setRowCol(int inRow, int inCol)
-{
-    row = inRow;
-    col = inCol;
-}
-
-void RowColumnClass::setRow(int inRow)
-{
-    row = inRow;
-}
-
-void RowColumnClass::setCol(int inCol)
-{
-    col = inCol;
-}
-
-int RowColumnClass::getRow()
-{
-    return (row);
-}
-
-int RowColumnClass::getCol()
-{
-    return (col);
-}
-
-void RowColumnClass::addRowColTo(RowColumnClass &inRowCol)
-{
-    row += inRowCol.row;
-    col += inRowCol.col;
-}
-
-void RowColumnClass::printRowCol()
-{
-    cout << "[" << row << "," << col << "]";
-}
-
-ColorImageClass::ColorImageClass()
-{
-    int row, col; //Represent the row and col of the image
-    for (row = 0; row < ROW; row++)
-    {
-        for (col = 0; col < COL; col++)
-        {
-            image[row][col].setToBlack();
-        }
-    }
-}
-
-void ColorImageClass::initializeTo(ColorClass &inColor)
-{
-    int row, col; //Represent the row and col of the image
-    for (row = 0; row < ROW; row++)
-    {
-        for (col = 0; col < COL; col++)
-        {
-            image[row][col].setTo(inColor);
-        }
-    }
-}
-
-bool ColorImageClass::addImageTo(ColorImageClass &rhsImg)
-{
-    int row, col; //Represent the row and col of image
-    bool isClip = false; //Tell if the value of color has ever clipped
-    for (row = 0; row <ROW; row++)
-    {
-        for (col = 0; col < COL; col++)
-        {
-            if (image[row][col].addColor(rhsImg.image[row][col]))
-            {
-                isClip = true;
-            }
-        }
-    }
-
-    return (isClip);
-}
-
-bool ColorImageClass::addImages(
-    int numImgsToAdd, 
-    ColorImageClass imagesToAdd[]
-    )
-{
-    int i, row, col; //For loop index
-    bool isClip = false; //Tell if the value of color has ever clipped
-
-    for (i = 1; i < numImgsToAdd; i++)
-    {
-        if (imagesToAdd[0].addImageTo(imagesToAdd[i]))
-        {
-            isClip = true;
-        }
-    }
-
-    for (row = 0; row < ROW; row++)
-    {
-        for (col = 0; col < COL; col++)
-        {
-            image[row][col] = imagesToAdd[0].image[row][col];
-        }
-    }
-
-    return (isClip);
-}
-
-bool ColorImageClass::setColorAtLocation(
-    RowColumnClass &inRowCol, 
-    ColorClass &inColor
-    )
-{
-    int row, col; //The location for changed value
-    bool valid = false; //Tell if the change is valid
-
-    row = inRowCol.getRow();
-    col = inRowCol.getCol();
-    if (row < ROW && row >= 0 && col < COL && col >= 0)
-    {
-        valid = true;
-        image[row][col].setTo(inColor);
-    }
-
-    return (valid);
-}
-
-bool ColorImageClass::getColorAtLocation(
-    RowColumnClass &inRowCol,
-    ColorClass &outColor
-    )
-{
-    int row, col; //The location to get RGB value
-    bool valid = false; //Tell if location is valid
-
-    row = inRowCol.getRow();
-    col = inRowCol.getCol();
-    if (row < ROW && row >= 0 && col < COL && col >= 0)
-    {
-        valid = true;
-        outColor.setTo(image[row][col]);
-    }
-
-    return (valid);
-}
-
-void ColorImageClass::printImage()
-{
-    int i, j; //For loop index
-
-    for (i = 0; i < ROW; i++)
-    {
-        image[i][0].printComponentValues();
-
-        for (j = 1; j < COL; j++)
-        {
-            cout << "--";
-            image[i][j].printComponentValues();
-        }
-
-        cout << endl;
-    }
+  sum = 0;
+  for (i = 0; i < NUM_UNIFORM; i++)
+  {
+    uni = rand() % (MAX + 1);
+    sum += uni;
+  }
+  sum = sum / MAX;
+  standardNormal = sum - ORIGINAL_MEAN;
+  newNormal = mean + stdDev * standardNormal;
+  if (newNormal < 0)
+  {
+    newNormal *= - 1;
+  }
+  return ((int)newNormal);
 }

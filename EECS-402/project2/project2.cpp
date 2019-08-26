@@ -69,6 +69,8 @@ class ColorImageClass
 {
 private:
     ColorClass image[ROW][COL]; //The image array
+    bool isValidLoc(RowColumnClass &inRowCol);
+    //To check if the location is in the range
 
 public:
     ColorImageClass(); //Default ctor
@@ -93,6 +95,7 @@ public:
 
 int main()
 {
+    
     cout << "There is nothing here." << endl;
     return (0);
 }
@@ -311,6 +314,21 @@ void RowColumnClass::printRowCol()
     cout << "[" << row << "," << col << "]";
 }
 
+bool ColorImageClass::isValidLoc(RowColumnClass &inRowCol)
+{
+    bool valid = false;
+    int row, col;
+    row = inRowCol.getRow();
+    col = inRowCol.getCol();
+    if (row < ROW && row >= 0 && col < COL && col >= 0)
+    {
+        valid = true;
+    }
+
+    return (valid);
+
+}
+
 ColorImageClass::ColorImageClass()
 {
     int row, col; //Represent the row and col of the image
@@ -390,7 +408,7 @@ bool ColorImageClass::setColorAtLocation(
 
     row = inRowCol.getRow();
     col = inRowCol.getCol();
-    if (row < ROW && row >= 0 && col < COL && col >= 0)
+    if (isValidLoc(inRowCol))
     {
         valid = true;
         image[row][col].setTo(inColor);
@@ -409,7 +427,7 @@ bool ColorImageClass::getColorAtLocation(
 
     row = inRowCol.getRow();
     col = inRowCol.getCol();
-    if (row < ROW && row >= 0 && col < COL && col >= 0)
+    if (isValidLoc(inRowCol))
     {
         valid = true;
         outColor.setTo(image[row][col]);

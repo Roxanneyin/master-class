@@ -1,0 +1,71 @@
+bash-4.2$ ./project3.exe
+Usage: ./project3.exe <startPPM.ppm>
+bash-4.2$ ./project3.exe deerBad.ppm
+Reading initial image from: deerBad.ppm
+Error: Reading color from file
+Error: Reading image pixel at row: 380 col: 0
+Image read successful: No
+Error: While reading the image, an error was encountered.  Exiting the program!
+bash-4.2$ ./project3.exe deer.ppm
+Reading initial image from: deer.ppm
+Image read successful: Yes
+1. Encode a message from file
+2. Perform decode
+3. Write current image to file
+4. Exit the program
+Enter your choice: 1
+Enter name of file containing message: msgBad.txt
+Enter row and column for message placement: 50 50
+Error: Reading message value at row/col: 1 2
+Message encode successful: No
+1. Encode a message from file
+2. Perform decode
+3. Write current image to file
+4. Exit the program
+Enter your choice: 1
+Enter name of file containing message: msgGood.txt
+Enter row and column for message placement: 100 100
+Message encode successful: Yes
+1. Encode a message from file
+2. Perform decode
+3. Write current image to file
+4. Exit the program
+Enter your choice: 1
+Enter name of file containing message: msgGood.txt
+Enter row and column for message placement: 150 150
+Message encode successful: Yes
+1. Encode a message from file
+2. Perform decode
+3. Write current image to file
+4. Exit the program
+Enter your choice: 1
+Enter name of file containing message: msgGood.txt
+Enter row and column for message placement: 300 150
+Message encode successful: Yes
+1. Encode a message from file
+2. Perform decode
+3. Write current image to file
+4. Exit the program
+Enter your choice: 3
+Enter name of file to write image to: sample2Encoded.ppm
+Image write successful: Yes
+1. Encode a message from file
+2. Perform decode
+3. Write current image to file
+4. Exit the program
+Enter your choice: 2
+Image modified to decoded image contents
+1. Encode a message from file
+2. Perform decode
+3. Write current image to file
+4. Exit the program
+Enter your choice: 3
+Enter name of file to write image to: sample2Decoded.ppm
+Image write successful: Yes
+1. Encode a message from file
+2. Perform decode
+3. Write current image to file
+4. Exit the program
+Enter your choice: 4
+Thanks for using this program!
+bash-4.2$ 
