@@ -2,6 +2,9 @@
 
 These are my code homeworks for all the classes
 
+## EECS 402
+C++ programing
+
 ## EECS 545
 Machine Learning
 
